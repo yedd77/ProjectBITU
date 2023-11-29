@@ -1,4 +1,5 @@
-#pragma once
+#pragma warning(disable: 4267)
+#pragma warning(disable: 4101)
 
 #include <vector>
 #include <iostream>
@@ -119,6 +120,8 @@ namespace clitable {
             return p;
         }
 
+        // Suppress warning for arithmetic overflow
+        // NOLINTNEXTLINE(lint-arithmetic-overflow)
         std::string printSeparator(char dash, std::vector<Column> columns) {
             std::string p = "";
             p += '+';

@@ -7,6 +7,7 @@
 #include <sstream>
 #include "table.h"
 #include <limits>
+#include "Artwork.h"
 
 using namespace std;
 
@@ -20,64 +21,13 @@ void moduleSuperadmin();
 void editUser(string* userData);
 void staffMngtView();
 
-void art() {
-
-	string line = "\x1B[97m-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-\033[0m\n";
-
-	cout << line;
-	std::cout << "\033[97m";
-	cout << R"(
-                                             ________  ______  ___ _____ 
-                                            |  ___|  \/  ||  \/  |/  ___|
-                                            | |__ | .  . || .  . |\ `--. 
-                                            |  __|| |\/| || |\/| | `--. \
-                                            | |___| |  | || |  | |/\__/ /
-                                            \____/\_|  |_/\_|  |_/\____/ 
-
-                                         Elderly Medication Management System    
-          
-)";
-	std::cout << "\033[0m";
-	cout << line << endl;
-}
-
-void directory(string text) {
-
-	/* create a buffer info which control all information abt console and
-	* retrive the it. From the bufferInfo, the program retrieve rightmost and 
-	* leftmost column of the windows to calculate the width of the terminal 
-	* window. To find the right padding, the terminal width is subtracted with text length
-	* gotten from the parameter and divided by 2. This function is to center the text in the
-	* terminal*/
-	
-	CONSOLE_SCREEN_BUFFER_INFO bufferInfo;
-	GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &bufferInfo);
-	int terminalWidth = bufferInfo.srWindow.Right - bufferInfo.srWindow.Left + 1;
-
-	size_t textWidth = text.length(); 
-	size_t rightPadding = (terminalWidth - textWidth) / 2;
-
-	cout << "------------------------------------------------------------------------------------------------------------------------\n";
-	cout << setw(rightPadding + textWidth) << text << endl;
-	cout << "------------------------------------------------------------------------------------------------------------------------\n";
-}
-
-void loading() {
-
-	Sleep(1000);
-	cout << " .";
-	Sleep(1000);
-	cout << " .";
-	Sleep(1000);
-	cout << " .\n";
-	Sleep(2000);
-}
+Artwork art;
 
 boolean connectionFunction() {
 
-	art();
+	art.logoArt();
 	cout << "Initializing database connection";
-	loading();
+	art.loadingArt();
 
 	//initializing database connection
 	connection = mysql_init(0);
@@ -89,15 +39,15 @@ boolean connectionFunction() {
 		connection = mysql_real_connect(connection, "localhost", "root", "", "elderlyHome", 3306, NULL, 0);
 
 		cout << "Establishing database connection";
-		loading();
+		art.loadingArt();
 
 		if (connection) {
-			
+
 			printf("\x1B[32mDatabase connection successfully established\033[0m\n");
 			return true;
 		}
 		else {
-			
+
 			printf("\x1B[31mDatabase connection fails to establish\033[0m\n");
 			return false;
 		}
@@ -134,7 +84,7 @@ boolean firstTimeSetup() {
 
 			printf("\x1B[33mSystem has not been initialized\033[0m\n\n");
 			cout << "Initializing system";
-			loading();
+			art.loadingArt();
 
 			//Creating row in user table as superadmin with default password
 			//TODO 1: change pass and userIC
@@ -163,8 +113,9 @@ boolean firstTimeSetup() {
 
 boolean loggingOut() {
 	system("cls");
-	art();
-	directory("Logout Confirmation");
+	art.logoArt();
+	art.directoryArt("Logout Confirmation");
+	
 
 	cout << "\x1B[33mAre you sure you want to logout?\033[0m\n";
 	
@@ -444,8 +395,8 @@ void editUserStaffRole(string* userData) {
 //function to edit user
 void editUser(string* userData) {
 	system("cls");
-	art();
-	directory("Main Module Menu/Staff Management Module/View User/Edit user");
+	art.logoArt();
+	art.directoryArt("Main Module Menu/Staff Management Module/View User/Edit user");
 
 	clitable::Table table;
 	clitable::Column c[5] = {
@@ -505,8 +456,8 @@ void editUser(string* userData) {
 //function to remove user
 void removeUser(string* userData){
 	system("cls");
-	art();
-	directory("Main Module Menu/Staff Management Module/View User/Remove user");
+	art.logoArt();
+	art.directoryArt("Main Module Menu/Staff Management Module/View User/Remove user");
 
 	clitable::Table table;
 	clitable::Column c[5] = {
@@ -656,8 +607,8 @@ void searchUser() {
 void staffMngtView() {
 
 	system("cls");
-	art();
-	directory("Main Module Menu/Staff Management Module/View User");
+	art.logoArt();
+	art.directoryArt("Main Module Menu/Staff Management Module/View User");
 	
 	//initialize query and table
 	string query = "SELECT * FROM users";
@@ -762,8 +713,8 @@ void staffMngtView() {
 //staff management sub-module (Register new user)
 void staffMngtReg() {
 	system("cls");
-	art();
-	directory("Main Module Menu/Staff Management Module/Register New User");
+	art.logoArt();
+	art.directoryArt("Main Module Menu/Staff Management Module/Register New User");
 
 	string userID, userIC, userName, userPhone;
 	int userRole;
@@ -920,8 +871,8 @@ void staffMngtReg() {
 //staff management module
 void staffMngt() {
 	system("cls");
-	art();
-	directory("Main Module Menu/Staff Management Module");
+	art.logoArt();
+	art.directoryArt("Main Module Menu/Staff Management Module");
 	
 	cout << "\x1B[94mPlease select your next action\033[0m\n\n";
 
@@ -973,8 +924,8 @@ void staffMngt() {
 //Superadmin Menu
 void moduleSuperadmin() {
 	system("cls");
-	art();
-	directory("Main Module Menu");
+	art.logoArt();
+	art.directoryArt("Main Module Menu");
 
 	cout << "\x1B[94mSelect the module you want to access\033[0m\n\n";
 	
@@ -1053,7 +1004,7 @@ void userRoleSep(string* userData) {
 void havePassChanged(string* userData) {
 	
 	cout << "Checking user information";
-	loading();
+	art.loadingArt();
 
 	int userRole = stoi(userData[6]);
 	if (userRole == 0) {
@@ -1146,7 +1097,7 @@ void havePassChanged(string* userData) {
 void login() {
 
 	system("cls");
-	art();
+	art.logoArt();
 	string staffIC, password;
 
 	cout << "\x1B[94mPlease login to access the system\033[0m\n";
@@ -1260,7 +1211,7 @@ int main() {
 	if (mode == 1) {
 		system("cls");
 		//NORMAL MODE
-		// 
+		
 		//check if the connection unable to establish
 		if (!connectionFunction()) {
 			cout << "Program error, please try again\n\n";
