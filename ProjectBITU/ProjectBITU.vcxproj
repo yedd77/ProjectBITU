@@ -131,10 +131,17 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="artwork.cpp" />
+    <ClCompile Include="Auth.cpp" />
     <ClCompile Include="Source.cpp" />
+    <ClCompile Include="staffMngmtModule.cpp" />
+    <ClCompile Include="SuperAdmin.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Artwork.h" />
+    <ClInclude Include="Auth.h" />
+    <ClInclude Include="Misc.h" />
+    <ClInclude Include="staffMngmtModule.h" />
+    <ClInclude Include="SuperAdmin.h" />
     <ClInclude Include="table.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

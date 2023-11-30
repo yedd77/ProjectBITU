@@ -4,7 +4,6 @@
 #include <windows.h>
 #include "Artwork.h"
 
-
 using namespace std;
 
 //logo used in every page of the program

@@ -127,6 +127,8 @@ namespace clitable {
             p += '+';
             for (size_t i = 0; i < columns.size(); i++) {
                 int k = columns.at(i).getSize();
+                // Suppress warning for arithmetic overflow
+                // NOLINTNEXTLINE(lint-arithmetic-overflow)
                 for (size_t j = 0; j < (k + columns.at(i).getPadding() * 2); j++) p += dash;
                 p += '+';
             }
