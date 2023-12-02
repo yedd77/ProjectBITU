@@ -444,7 +444,18 @@ void StaffMngmtModule::staffUpdate(string* userData){
 
 	for (int i = 0; i < 5; i++) table.addColumn(c[i]);
 
-	table.addRow(userData);
+	string* updatedData = userData;
+	
+	for (int i = 0; i < 5; i++) {
+
+		if (i == 4) {
+			updatedData[i] = misc.getRoleString(stoi(userData[i]));
+		}
+		else {
+			updatedData[i] = userData[i];
+		}
+	}
+	table.addRow(updatedData);
 	std::cout << table.draw();
 
 	int option = 0;
