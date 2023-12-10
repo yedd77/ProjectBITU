@@ -132,6 +132,8 @@
   <ItemGroup>
     <ClCompile Include="artwork.cpp" />
     <ClCompile Include="Auth.cpp" />
+    <ClCompile Include="MedMgmntSub.cpp" />
+    <ClCompile Include="MedStrgModule.cpp" />
     <ClCompile Include="Source.cpp" />
     <ClCompile Include="staffMngmtModule.cpp" />
     <ClCompile Include="SuperAdmin.cpp" />
@@ -139,10 +141,15 @@
   <ItemGroup>
     <ClInclude Include="Artwork.h" />
     <ClInclude Include="Auth.h" />
+    <ClInclude Include="MedMgmntSub.h" />
+    <ClInclude Include="MedStrgModule.h" />
     <ClInclude Include="Misc.h" />
     <ClInclude Include="staffMngmtModule.h" />
     <ClInclude Include="SuperAdmin.h" />
     <ClInclude Include="table.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="TODO.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

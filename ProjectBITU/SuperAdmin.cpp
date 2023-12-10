@@ -3,6 +3,7 @@
 #include "Artwork.h"
 #include "Auth.h"
 #include "SuperAdmin.h"
+#include "MedStrgModule.h"
 #include "staffMngmtModule.h"
 
 using namespace std;
@@ -10,6 +11,7 @@ using namespace std;
 extern Artwork art;
 extern Auth auth;
 StaffMngmtModule staffModule;
+MedStrgModule meds;
 
 void SuperAdmin::superAdminMenu() {
 
@@ -39,8 +41,9 @@ void SuperAdmin::superAdminMenu() {
 	else {
 		switch (option) {
 		case 1:
-			// MSMM module
-			// TODO
+			cout << "\nRedirecting you to Medicines Management Module\n";
+			system("pause");
+			meds.nurseModuleMenu(); 
 			break;
 		case 2:
 			// RMM Module

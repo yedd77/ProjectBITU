@@ -11,14 +11,13 @@
 #include "Auth.h"
 #include "SuperAdmin.h"
 
-//Debug header
-#include "staffMngmtModule.h"
+//debug
+#include "MedStrgModule.h"
+
+//debug
+MedStrgModule medStrgModule;
 
 using namespace std;
-
-
-//Debug variable
-StaffMngmtModule staff;
 
 int conState;
 MYSQL* connection;
@@ -101,6 +100,6 @@ int main() {
 		auth.firstTimeSetup();
 		
 		//set function need to be debugged here
-		staff.staffMenu();
+		medStrgModule.nurseModuleMenu();
 	}
 }

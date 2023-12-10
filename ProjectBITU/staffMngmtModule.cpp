@@ -39,8 +39,7 @@ void StaffMngmtModule::staffMenu(){
 		cout << "\n\x1B[31mInvalid input, please try again\033[0m\n";
 		system("pause");
 		staffMenu();
-	}
-	else {
+	} else {
 		switch (option) {
 		case 1:
 			cout << "\nRedirecting you to Staff Registration\n";
@@ -77,7 +76,7 @@ void StaffMngmtModule::staffRegistration(){
 	string userID, userIC, userName, userPhone;
 	int userRole;
 
-	cout << "You are about to register new user, to avoid redundancy of user please provide the new user IC\n";
+	cout << "\x1B[94mYou are about to register new user, to avoid redundancy of user please provide the new user IC\033[0m\n";
 	cout << "\x1B[94mPlease enter the IC number without '-' and using this format (010203040606)\033[0m\n\n";
 
 	//keep looping until all condition are met
@@ -101,6 +100,7 @@ void StaffMngmtModule::staffRegistration(){
 		}
 	} while (true);
 
+	//check if user exist in DB
 	if (misc.checkUserExist(userIC)) {
 		cout << "\n\x1B[33mUser already exist, redirecting you back to Staff Management Module\033[0m\n";
 		system("pause");
@@ -175,10 +175,11 @@ void StaffMngmtModule::staffRegistration(){
 			cout << "\n\x1B[33mInvalid input\033[0m\n";
 			cout << "\x1B[33mPlease try again\033[0m\n";
 			numOption = 0;
+			system("pause");
+			break;
 		}
 	} while (continueLoop);
 
-	//TODO
 	//retrieve last record from DB
 	string query =
 		"SELECT * FROM users "
@@ -191,7 +192,6 @@ void StaffMngmtModule::staffRegistration(){
 	if (!conState) {
 		res = mysql_store_result(connection);
 		row = mysql_fetch_row(res);
-		;
 	}
 	else {
 		cout << "\x1B[31m\nQuery error\033[0m\n" << mysql_errno(connection) << endl;
@@ -254,9 +254,7 @@ void StaffMngmtModule::staffListView(){
 		};
 
 		//add column to the table
-		for (int i = 0; i < 5; i++) {
-			table.addColumn(c[i]);
-		}
+		for (int i = 0; i < 5; i++) {table.addColumn(c[i]);}
 
 		while ((row = mysql_fetch_row(res))) {
 			vector<string> row_data; // Create vector to hold data
@@ -287,7 +285,6 @@ void StaffMngmtModule::staffListView(){
 		cout << table.draw() << endl;
 		mysql_free_result(res);
 
-		//todo error
 		bool continueLoop = true;
 
 		do {

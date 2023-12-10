@@ -51,6 +51,29 @@ public:
 		return false;
 	}
 
+	//function to check if meds name exist in database
+	bool checkMedsNameExist(string medsName) {
+
+		//define sql statement and connection state
+		string query = "SELECT COUNT(*) FROM medicines WHERE medsName ='" + medsName + "'";
+		const char* cu = query.c_str();
+		conState = mysql_query(connection, cu);
+
+		//check query execution
+		if (!conState) {
+			res = mysql_store_result(connection);
+			row = mysql_fetch_row(res);
+			int medsCount = atoi(row[0]);
+			mysql_free_result(res);
+
+			//check if meds exist in database
+			if (medsCount != 0) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	//function to create ID
 	string createID(string lastID, string prefix) {
 
