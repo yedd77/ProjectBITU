@@ -13,8 +13,7 @@ public:
 	void staffMenu();
 	void staffRegistration();
 	void staffListView();
-	void staffSearch();
-	void staffUpdateorRemove(string* userData);
+	void staffSearch();	
 	void staffUpdate(string* userData);
 	void staffUpdateIC(string* userData);
 	void staffUpdateName(string* userData);

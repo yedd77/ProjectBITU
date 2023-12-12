@@ -9,9 +9,11 @@ class MedMgmntSub {
 
 public :
 
-	void MedMgmntMenu();
-	void MedMgmntAdd();
-	void medMgmntView();
-
+	void MedsMgmntMenu();
+	void MedsMgmntAdd();
+	void medsMgmntView();
+	void medsSearch();
+	void medsUpdate(string* medsData);
+	void medsRemove(string* medsData);
 };
 #endif // !MEDMGMNTSUB_H

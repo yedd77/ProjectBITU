@@ -6,6 +6,7 @@
 #include "Auth.h"
 #include "table.h"
 
+
 using namespace std;
 
 extern Artwork art;
@@ -14,7 +15,7 @@ extern Misc misc;
 extern MedStrgModule medStrgModule;
 
 //function to display the meds management sub-module menu
-void MedMgmntSub::MedMgmntMenu(){
+void MedMgmntSub::MedsMgmntMenu(){
 
 	system("cls");
 	art.logoArt();
@@ -22,8 +23,8 @@ void MedMgmntSub::MedMgmntMenu(){
 
 	cout << "\x1B[94mPlease select your next action\033[0m\n\n";
 
-	cout << "1 - Add new medications\n";
-	cout << "2 - View existing staff\n";
+	cout << "1 - Add new medicines\n";
+	cout << "2 - View existing medicines\n";
 	cout << "3 - Go back to previous menu\n";
 	cout << "4 - Log out\n";
 
@@ -37,15 +38,15 @@ void MedMgmntSub::MedMgmntMenu(){
 		cin.ignore();
 		cout << "\n\x1B[31mInvalid input, please try again\033[0m\n";
 		system("pause");
-		MedMgmntMenu();
+		MedsMgmntMenu();
 	}
 	else {
 		switch (option) {
 		case 1:
-			MedMgmntAdd();
+			MedsMgmntAdd();
 			break;
 		case 2:
-			medMgmntView();
+			medsMgmntView();
 			break;
 		case 3:
 			cout << "\nRedirecting you back to previous menu\n";
@@ -55,7 +56,7 @@ void MedMgmntSub::MedMgmntMenu(){
 		case 4:
 			system("pause");
 			if (!auth.logout()) {
-				MedMgmntMenu();
+				MedsMgmntMenu();
 			}
 			break;
 
@@ -64,7 +65,7 @@ void MedMgmntSub::MedMgmntMenu(){
 }
 
 //function to add new medicine to database
-void MedMgmntSub::MedMgmntAdd() {
+void MedMgmntSub::MedsMgmntAdd() {
 
 	system("cls");
 	art.logoArt();
@@ -87,7 +88,7 @@ void MedMgmntSub::MedMgmntAdd() {
 	if (misc.checkMedsNameExist(medName)) {
 		cout << "\n\x1B[91mMedicine's name already exist in database, please try again\033[0m\n";
 		system("pause");
-		MedMgmntMenu();
+		MedsMgmntMenu();
 	}
 
 	cout << "Medicine did not exist in database\n";
@@ -196,6 +197,7 @@ void MedMgmntSub::MedMgmntAdd() {
 			continue;
 		}
 		else {
+			price = price + 0.00;
 			medPrice = to_string(price);
 			break;
 		}
@@ -244,7 +246,7 @@ void MedMgmntSub::MedMgmntAdd() {
 		cout << "\n\x1B[32mMedicine's information successfully added to database\033[0m\n";
 		cout << "\nDirecting you back to previous menu\n";
 		system("pause");
-		MedMgmntMenu();
+		MedsMgmntMenu();
 	}
 	else {
 		cout << "\n\x1B[31mQuery error\033[0m\n" << mysql_errno(connection) << endl;
@@ -253,7 +255,7 @@ void MedMgmntSub::MedMgmntAdd() {
 }
 
 //function to display meds list
-void MedMgmntSub::medMgmntView(){
+void MedMgmntSub::medsMgmntView(){
 	
 	system("cls");
 	art.logoArt();
@@ -310,8 +312,213 @@ void MedMgmntSub::medMgmntView(){
 		mysql_free_result(res);
 
 
-		//debug
-		system("pause");
+		bool continueLoop3 = true;
+
+		do {
+			int option = 0;
+
+			cout << "\x1B[94mPlease enter your next action\033[0m\n\n";
+			cout << "1 - Edit or remove medicine\n";
+			cout << "2 - Go back to previous menu\n\n";
+			cout << "Enter your choice : ";
+
+			if (cin >> option) {
+
+				switch (option) {
+				case 1:
+					continueLoop3 = false;
+					option = 0;
+					medsSearch();
+					break;
+				case 2:
+						cout << "\nRedirecting you back to previous menu\n";
+						system("pause");
+						MedsMgmntMenu();
+						break;
+				}
+			}
+			else {
+				continueLoop3 = true;
+				option = 0;
+				cout << "\n\x1B[31mInvalid input\033[0m\n";
+				cout << "\x1B[31mPlease try again\033[0m\n\n";
+				cin.clear();
+				cin.ignore();
+			}
+			
+
+		} while (continueLoop3);
 	}
+	else {
+		cout << "\n\x1B[31mQuery error\033[0m\n" << mysql_errno(connection) << endl;
+		exit(0);
+	}
+}
+
+//function to search meds for edit or remove user
+void MedMgmntSub::medsSearch(){
+
+	string medsID;
+	cin.clear();
+	cin.ignore(INT_MAX, '\n');
+
+	do {
+
+		cout << "Please enter medicine's ID : ";
+		cin >> medsID;
+		cin.clear();
+		cin.ignore(INT_MAX, '\n');
+
+		//define sql statement and connection state
+		string query = "SELECT * FROM medicines WHERE medsID = '" + medsID + "'";
+		const char* q = query.c_str();
+		conState = mysql_query(connection, q);
+
+		if (!conState) {
+			res = mysql_store_result(connection);
+			if (mysql_num_rows(res) > 0) {
+				cout << "\n\x1B[32mMedicines found\033[0m\n\n";
+				break;
+			}
+			else {
+				cout << "\n\x1B[31mMedicines not found\033[0m\n\n";
+				system("pause");
+				medsMgmntView();
+			}
+		}
+		else {
+			cout << "\n\x1B[31mQuery error\033[0m\n" << mysql_errno(connection) << endl;
+			exit(0);
+		}
+
+	} while (true);
+
+	row = mysql_fetch_row(res);
+	string medsData[8];
+	boolean continueLoop = true;
+	int option = 0;
+	int medsDataIndex = 0;
+
+	//looping through column from database
+	for (int i = 0; i < 8; i++) {
+		if (row[i] != nullptr) {
+			medsData[medsDataIndex] = row[i];
+			medsDataIndex++;
+		}
+		else {
+			medsData[medsDataIndex] = "NULL";
+			medsDataIndex++;
+		}
+	}
+
+	do {
+
+		cout << "\x1B[94mPlease select your next option\033[0m\n\n";
+
+		cout << "1 - Edit medicine's information\n";
+		cout << "2 - Remove medicine from database\n";
+		cout << "3 - Go back to previous menu\n";
+		cout << "Enter your option : ";
+		
+		cin >> option;
+
+		if (cin.fail()) {
+			cin.clear();
+			cin.ignore();
+			cout << "\n\x1B[31mInvalid input\033[0m\n";
+			cout << "\x1B[31mPlease try again\033[0m\n\n";
+			option = 0;
+			continue;
+		}
+
+		switch (option) {
+		case 1:
+			medsUpdate(medsData);
+			break;
+		case 2:
+			//TODO
+			//DELETE USER
+			break;
+		case 3:
+			medsMgmntView();
+			break;
+		}
+
+	} while (continueLoop);
+}
+
+void MedMgmntSub::medsUpdate(string* medsData){
+	system("cls");
+	art.logoArt();
+	art.directoryArt("MSMM/Meds Management sub-module/View Medicines/Edit Medicine");
+
+	clitable::Table table;
+	clitable::Column c[7] = {
+			clitable::Column("Meds ID",  clitable::Column::CENTER_ALIGN, clitable::Column::CENTER_ALIGN, 1, 8, clitable::Column::NON_RESIZABLE),
+			clitable::Column("Meds Name",  clitable::Column::CENTER_ALIGN, clitable::Column::LEFT_ALIGN, 1, 26, clitable::Column::NON_RESIZABLE),
+			clitable::Column("Meds  Dosage",  clitable::Column::CENTER_ALIGN, clitable::Column::CENTER_ALIGN, 1, 6, clitable::Column::NON_RESIZABLE),
+			clitable::Column("Meds Type",  clitable::Column::CENTER_ALIGN, clitable::Column::CENTER_ALIGN, 1, 11, clitable::Column::NON_RESIZABLE),
+			clitable::Column("Meds Price",  clitable::Column::CENTER_ALIGN, clitable::Column::CENTER_ALIGN, 1, 11, clitable::Column::NON_RESIZABLE),
+			clitable::Column("Meds Brand",  clitable::Column::CENTER_ALIGN, clitable::Column::LEFT_ALIGN, 1, 25, clitable::Column::NON_RESIZABLE),
+			clitable::Column("Sedative",  clitable::Column::CENTER_ALIGN, clitable::Column::CENTER_ALIGN, 1, 11, clitable::Column::NON_RESIZABLE)
+	};
+
+	for (int i = 0; i < 7; i++) table.addColumn(c[i]);
+
+
+	string updatedData[7];
+	int j = 0;
+	for (int i = 0; i < 8; i++) {
+		
+		if (i == 4) {
+			updatedData[j] = "RM " + medsData[i];
+			j++;
+		}
+		else if (i == 5) {
+			continue;
+			j++;
+		}
+		else if (i == 7) {
+
+			updatedData[j] = stoi(medsData[i]) == 1 ? "Yes" : "No";
+			j++;
+		}
+		else {
+			updatedData[j] = medsData[i];
+			j++;
+		}
+	}
+	
+
+	/*for (int i = 0; i < 7; i++) { cout << updatedData[i] << endl; }*/
+
+	/*system("pause");*/
+	table.addRow(updatedData);
+	cout << table.draw();
+
+	system("pause");
+	
+}
+
+
+//TODO
+void MedMgmntSub::medsRemove(string* medsData){
+	
+	system("cls");
+	art.logoArt();
+	art.directoryArt("MSMM/Meds Management sub-module/View Medicines/Remove Medicine");
+
+	clitable::Table table;
+	clitable::Column c[7] = {
+			clitable::Column("Meds ID",  clitable::Column::CENTER_ALIGN, clitable::Column::CENTER_ALIGN, 1, 8, clitable::Column::NON_RESIZABLE),
+			clitable::Column("Meds Name",  clitable::Column::CENTER_ALIGN, clitable::Column::LEFT_ALIGN, 1, 26, clitable::Column::NON_RESIZABLE),
+			clitable::Column("Meds  Dosage",  clitable::Column::CENTER_ALIGN, clitable::Column::CENTER_ALIGN, 1, 6, clitable::Column::NON_RESIZABLE),
+			clitable::Column("Meds Type",  clitable::Column::CENTER_ALIGN, clitable::Column::CENTER_ALIGN, 1, 11, clitable::Column::NON_RESIZABLE),
+			clitable::Column("Meds Price",  clitable::Column::CENTER_ALIGN, clitable::Column::CENTER_ALIGN, 1, 11, clitable::Column::NON_RESIZABLE),
+			clitable::Column("Meds Brand",  clitable::Column::CENTER_ALIGN, clitable::Column::LEFT_ALIGN, 1, 25, clitable::Column::NON_RESIZABLE),
+			clitable::Column("Sedative",  clitable::Column::CENTER_ALIGN, clitable::Column::CENTER_ALIGN, 1, 11, clitable::Column::NON_RESIZABLE)
+	};
+
+	for (int i = 0; i < 5; i++) table.addColumn(c[i]);
 }
 

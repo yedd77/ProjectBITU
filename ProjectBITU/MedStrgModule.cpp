@@ -41,7 +41,7 @@ void MedStrgModule::nurseModuleMenu(){
 	else {
 		switch (option) {
 		case 1:
-			medMgmntSub.MedMgmntMenu();
+			medMgmntSub.MedsMgmntMenu();
 			break;
 		case 2:
 			// Storage Management sub-module

@@ -355,6 +355,8 @@ void StaffMngmtModule::staffSearch(){
 			}
 			else {
 				cout << "\n\x1B[31mUser doesn't exist. Please try again\033[0m\n";
+				system("pause");
+				staffListView();
 			}
 		}
 		else {
@@ -389,7 +391,7 @@ void StaffMngmtModule::staffSearch(){
 	do {
 		cout << "\x1B[94mPlease select your next option\033[0m\n\n";
 
-		cout << "1 - Edit this user\n";
+		cout << "1 - Edit user's information\n";
 		cout << "2 - Remove this user\n";
 		cout << "3 - Go back to previous page\n";
 		cout << "Enter your option : ";
@@ -418,7 +420,9 @@ void StaffMngmtModule::staffSearch(){
 			staffRemove(userData);
 			break;
 		case 3:
+			system("pause");
 			staffListView();
+			break;
 		}
 	} while (continueLoop);
 }
@@ -453,7 +457,7 @@ void StaffMngmtModule::staffUpdate(string* userData){
 		}
 	}
 	table.addRow(updatedData);
-	std::cout << table.draw();
+	cout << table.draw();
 
 	int option = 0;
 	boolean continueLoop = true;
