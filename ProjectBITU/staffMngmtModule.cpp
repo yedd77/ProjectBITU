@@ -481,24 +481,28 @@ void StaffMngmtModule::staffUpdate(string* userData){
 			option = 0;
 			continue;
 		}
-		else {
+
+		switch (option) {
+		case 1:
+			staffUpdateIC(userData);
+			break;
+		case 2:
+			staffUpdateName(userData);
+			break;
+		case 3:
+			staffUpdatePhone(userData);
+			break;
+		case 4:
+			staffUpdateRole(userData);
+			break;
+		case 5:
+			staffListView();
 			break;
 		}
 
 	} while (continueLoop);
 
-	switch (option) {
-	case 1:
-		staffUpdateIC(userData);
-	case 2:
-		staffUpdateName(userData);
-	case 3:
-		staffUpdatePhone(userData);
-	case 4:
-		staffUpdateRole(userData);
-	case 5:
-		staffListView();
-	}
+	
 }
 
 //function to edit staff IC
@@ -706,14 +710,14 @@ void StaffMngmtModule::staffRemove(string* userData){
 	table.addRow(userData);
 	std::cout << table.draw();
 
-	char option;
-	cout << "\x1B[33mAre you sure want to remove this staff\033[0m\n";
-	cout << "\nEnter your choice (Y/N) : ";
-	cin >> option;
-
 	boolean continueLoop = true;
 
 	do {
+		char option;
+		cout << "\x1B[33mAre you sure want to remove this staff\033[0m\n";
+		cout << "\nEnter your choice (Y/N) : ";
+		cin >> option;
+
 		switch (option) {
 		case 'Y': {
 			string query = "DELETE FROM users WHERE staffID = '" + userData[0] + "'";
@@ -738,7 +742,8 @@ void StaffMngmtModule::staffRemove(string* userData){
 			break;
 		default:
 			cout << "\x1B[31m\nInvalid input, please try again\033[0m\n" << mysql_errno(connection) << endl;
-			break;
+			system("pause");
+			staffRemove(userData);
 		}
 	} while (continueLoop);
 }

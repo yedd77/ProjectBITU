@@ -15,7 +15,7 @@ extern Misc misc;
 extern MedStrgModule medStrgModule;
 
 //function to display the meds management sub-module menu
-void MedMgmntSub::MedsMgmntMenu(){
+void MedMgmntSub::MedsMgmntMenu() {
 
 	system("cls");
 	art.logoArt();
@@ -31,7 +31,7 @@ void MedMgmntSub::MedsMgmntMenu(){
 	cout << "\nEnter your choice : ";
 
 	int option;
-	cin >> option;	
+	cin >> option;
 
 	if (cin.fail()) {
 		cin.clear();
@@ -109,7 +109,7 @@ void MedMgmntSub::MedsMgmntAdd() {
 		cout << "\x1B[31m\nQuery error\033[0m\n" << mysql_errno(connection) << endl;
 		exit(0);
 	}
-	
+
 	//convert SQL array to normal string and pass the value to createID
 	string passedID;
 	if (row) {
@@ -119,7 +119,7 @@ void MedMgmntSub::MedsMgmntAdd() {
 		passedID = "0000";
 	}
 	string medsID = misc.createID(passedID, "MED");
-	
+
 	//meds type
 	bool continueLoop = true;
 	do {
@@ -134,15 +134,15 @@ void MedMgmntSub::MedsMgmntAdd() {
 		cin >> option;
 
 		switch (option) {
-		case 1 :
+		case 1:
 			medType = "Tablet";
 			continueLoop = false;
 			break;
-		case 2 :
+		case 2:
 			medType = "Capsule";
 			continueLoop = false;
 			break;
-		case 3 :
+		case 3:
 			medType = "Syrup";
 			continueLoop = false;
 			break;
@@ -160,8 +160,8 @@ void MedMgmntSub::MedsMgmntAdd() {
 	cout << "Enter medicine's description : ";
 	cin.clear();
 	cin.ignore(INT_MAX, '\n');
-	getline(cin , medDesc);
-	
+	getline(cin, medDesc);
+
 	//meds dosage
 	do {
 
@@ -185,10 +185,10 @@ void MedMgmntSub::MedsMgmntAdd() {
 
 	//meds price
 	do {
-		float price = 0;
+		double price = 0;
 		cout << "\n\x1B[94mPlease enter medication price\033[0m";
 		cout << "\nEnter medicine's price (RM) : ";
-		
+
 		if (!(cin >> price)) {
 			price = 0;
 			cin.clear();
@@ -255,8 +255,8 @@ void MedMgmntSub::MedsMgmntAdd() {
 }
 
 //function to display meds list
-void MedMgmntSub::medsMgmntView(){
-	
+void MedMgmntSub::medsMgmntView() {
+
 	system("cls");
 	art.logoArt();
 	art.directoryArt("MSMM/Meds Management sub-module/View Medicines");
@@ -284,7 +284,7 @@ void MedMgmntSub::medsMgmntView(){
 		};
 
 		//add column to the table
-		for (int i = 0; i < 7; i++) {table.addColumn(c[i]);}
+		for (int i = 0; i < 7; i++) { table.addColumn(c[i]); }
 
 		while ((row = mysql_fetch_row(res))) {
 			vector<string> rowData; //create a vector to store the row data
@@ -331,10 +331,10 @@ void MedMgmntSub::medsMgmntView(){
 					medsSearch();
 					break;
 				case 2:
-						cout << "\nRedirecting you back to previous menu\n";
-						system("pause");
-						MedsMgmntMenu();
-						break;
+					cout << "\nRedirecting you back to previous menu\n";
+					system("pause");
+					MedsMgmntMenu();
+					break;
 				}
 			}
 			else {
@@ -345,7 +345,7 @@ void MedMgmntSub::medsMgmntView(){
 				cin.clear();
 				cin.ignore();
 			}
-			
+
 
 		} while (continueLoop3);
 	}
@@ -356,7 +356,7 @@ void MedMgmntSub::medsMgmntView(){
 }
 
 //function to search meds for edit or remove user
-void MedMgmntSub::medsSearch(){
+void MedMgmntSub::medsSearch() {
 
 	string medsID;
 	cin.clear();
@@ -419,7 +419,7 @@ void MedMgmntSub::medsSearch(){
 		cout << "2 - Remove medicine from database\n";
 		cout << "3 - Go back to previous menu\n";
 		cout << "Enter your option : ";
-		
+
 		cin >> option;
 
 		if (cin.fail()) {
@@ -436,8 +436,7 @@ void MedMgmntSub::medsSearch(){
 			medsUpdate(medsData);
 			break;
 		case 2:
-			//TODO
-			//DELETE USER
+			medsRemove(medsData);
 			break;
 		case 3:
 			medsMgmntView();
@@ -447,7 +446,7 @@ void MedMgmntSub::medsSearch(){
 	} while (continueLoop);
 }
 
-void MedMgmntSub::medsUpdate(string* medsData){
+void MedMgmntSub::medsUpdate(string* medsData) {
 	system("cls");
 	art.logoArt();
 	art.directoryArt("MSMM/Meds Management sub-module/View Medicines/Edit Medicine");
@@ -469,8 +468,9 @@ void MedMgmntSub::medsUpdate(string* medsData){
 	string updatedData[7];
 	int j = 0;
 	for (int i = 0; i < 8; i++) {
-		
+
 		if (i == 4) {
+
 			updatedData[j] = "RM " + medsData[i];
 			j++;
 		}
@@ -488,22 +488,107 @@ void MedMgmntSub::medsUpdate(string* medsData){
 			j++;
 		}
 	}
-	
 
-	/*for (int i = 0; i < 7; i++) { cout << updatedData[i] << endl; }*/
-
-	/*system("pause");*/
 	table.addRow(updatedData);
 	cout << table.draw();
+	cout << "Meds Description : " << medsData[5] << endl << endl;
 
-	system("pause");
-	
+	int option = 0;
+	boolean continueLoop = true;
+
+	do {
+		cout << "\x1B[96mTo maintain accurate stock records, some column cannot be modified directly. \033[0m";
+		cout << "\n\x1B[96mIf there are significant changes to these aspects, please remove the medication\033[0m";
+		cout << "\n\x1B[96mand add it again with the correct details.\033[0m\n\n";
+
+		cout << "\n\x1B[94mSelect Column you want to edit\033[0m\n\n";
+		cout << "1 - Meds Price\n";
+		cout << "2 - Meds Description\n";
+		cout << "3 - Go back to previous menu\n";
+		cout << "Enter your choice : ";
+		cin >> option;
+
+		if (cin.fail()) {
+			cin.clear();
+			cout << "\n\x1B[31mInvalid input\033[0m\n";
+			cout << "\x1B[31mPlease try again\033[0m\n\n";
+			option = 0;
+			continue;
+		}
+
+		switch (option) {
+		case 1:
+			medsUpdatePrice(medsData);
+			break;
+		case 2:
+			medsUpdateDesc(medsData);
+			break;
+		}
+	} while (continueLoop);
+
 }
 
+//Function to update meds price
+void MedMgmntSub::medsUpdatePrice(string* medsData) {
+
+	double price;
+
+	//meds price
+	do {
+		cout << "\n\nCurrent medicine's price : RM " << medsData[4] << endl;
+		cout << "\n\x1B[94mPlease enter medication price\033[0m";
+		cout << "\nEnter medicine's price (RM) : ";
+
+		if (!(cin >> price)) {
+			price = 0;
+			cin.clear();
+			cin.ignore(INT_MAX, '\n');
+			cout << "\x1B[33mInvalid response, please try again\033[0m\n";
+			continue;
+		}
+		else {
+			price = price + 0.00;
+			break;
+		}
+	} while (true);
+
+	string query = "UPDATE medicines SET "
+		"medsPrice = '" + to_string(price) + "' "
+		"WHERE medsID = '" + medsData[0] + "'";
+
+	const char* q = query.c_str();
+	conState = mysql_query(connection, q);
+
+	cout << "\n\x1B[32mMedicine's price successfully updated\033[0m\n";
+	system("pause");
+	medsMgmntView();
+}
+
+void MedMgmntSub::medsUpdateDesc(string* medsData) {
+	string medDesc;
+
+	cout << "\n\nCurrent medicine's description : " << medsData[5] << endl;
+	cout << "\n\x1B[94mPlease enter medication description\033[0m";
+	cout << "\nEnter medicine's description : ";
+	cin.clear();
+	cin.ignore(INT_MAX, '\n');
+	getline(cin, medDesc);
+
+	string query = "UPDATE medicines SET "
+		"medsDesc = '" + medDesc + "' "
+		"WHERE medsID = '" + medsData[0] + "'";
+
+	const char* q = query.c_str();
+	conState = mysql_query(connection, q);
+
+	cout << "\n\x1B[32mMedicine's description successfully updated\033[0m\n";
+	system("pause");
+	medsMgmntView();
+}
 
 //TODO
-void MedMgmntSub::medsRemove(string* medsData){
-	
+void MedMgmntSub::medsRemove(string* medsData) {
+
 	system("cls");
 	art.logoArt();
 	art.directoryArt("MSMM/Meds Management sub-module/View Medicines/Remove Medicine");
@@ -519,6 +604,72 @@ void MedMgmntSub::medsRemove(string* medsData){
 			clitable::Column("Sedative",  clitable::Column::CENTER_ALIGN, clitable::Column::CENTER_ALIGN, 1, 11, clitable::Column::NON_RESIZABLE)
 	};
 
-	for (int i = 0; i < 5; i++) table.addColumn(c[i]);
+	for (int i = 0; i < 7; i++) table.addColumn(c[i]);
+
+	string updatedData[7];
+	int j = 0;
+	for (int i = 0; i < 8; i++) {
+
+		if (i == 4) {
+
+			updatedData[j] = "RM " + medsData[i];
+			j++;
+		}
+		else if (i == 5) {
+			continue;
+			j++;
+		}
+		else if (i == 7) {
+
+			updatedData[j] = stoi(medsData[i]) == 1 ? "Yes" : "No";
+			j++;
+		}
+		else {
+			updatedData[j] = medsData[i];
+			j++;
+		}
+	}
+
+	table.addRow(updatedData);
+	cout << table.draw();
+
+	bool continueLoop = true;	
+
+	do {
+		char confirm;
+		cout << "\x1B[33mBy deleting this medicines, the record of stocks inside the inventory also will be deleted.\033[0m\n";
+		cout << "\x1B[33mAre you sure want to remove this medicines?\033[0m\n";
+		cout << "\nEnter your choice (Y/N) : ";
+		cin >> confirm;
+
+		switch (confirm) {
+		case 'Y': {
+			string query = "DELETE FROM medicines WHERE medsID = '" + medsData[0] + "'";
+			const char* q = query.c_str();
+			conState = mysql_query(connection, q);
+
+			if (!conState) {
+				cout << "\n\x1B[32mMedicine successfully removed\033[0m\n";
+				system("pause");
+				medsMgmntView();
+			}
+			else {
+				cout << "\n\x1B[31mQuery error\033[0m\n" << mysql_errno(connection) << endl;
+				exit(0);
+			}
+			break;
+		}
+		case 'N':
+			cout << "Redirecting you to previous page\n";
+			system("pause");
+			medsMgmntView();
+			break;
+		default:
+			cout << "\n\x1B[31mInvalid input, please try again\033[0m\n";
+			system("pause");
+			medsRemove(medsData);
+		}
+
+	} while (continueLoop);
 }
 

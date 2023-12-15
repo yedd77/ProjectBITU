@@ -39,6 +39,9 @@
     <ClCompile Include="MedMgmntSub.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="StorageMgmntSub.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="table.h">
@@ -63,6 +66,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="MedMgmntSub.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="StorageMgmntSub.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

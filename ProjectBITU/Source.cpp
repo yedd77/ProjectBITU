@@ -28,6 +28,7 @@ Artwork art;
 SuperAdmin admin;
 Auth auth;
 
+
 boolean connectionFunction() {
 
 	art.logoArt();
@@ -65,7 +66,7 @@ boolean connectionFunction() {
 }
 
 int main() {
-
+	
 	//debug mode
 	int mode;
 	cout << "1 - Normal\n";

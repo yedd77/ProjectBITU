@@ -14,6 +14,8 @@ public :
 	void medsMgmntView();
 	void medsSearch();
 	void medsUpdate(string* medsData);
+	void medsUpdatePrice(string* medsData);
+	void medsUpdateDesc(string* medsData);
 	void medsRemove(string* medsData);
 };
 #endif // !MEDMGMNTSUB_H
