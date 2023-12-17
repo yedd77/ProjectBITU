@@ -17,5 +17,7 @@ public :
 	void medsUpdatePrice(string* medsData);
 	void medsUpdateDesc(string* medsData);
 	void medsRemove(string* medsData);
+
+	void batchMgmntAdd(string* medsData);
 };
 #endif // !MEDMGMNTSUB_H

@@ -10,7 +10,6 @@ class StorageMgmntSub {
 public:
 
 	void StorageMgmntMenu();
-	void StorageMgmntBatchAdd();
 	/*void StorageMgmntView();
 	void StorageSearch();
 	void StorageUpdate(string* StorageData);

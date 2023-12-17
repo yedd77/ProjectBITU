@@ -59,6 +59,3 @@ void StorageMgmntSub::StorageMgmntMenu(){
 	}
 }
 
-//function to add new medicines batches
-void StorageMgmntSub::StorageMgmntBatchAdd(){
-}

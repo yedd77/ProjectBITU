@@ -12,6 +12,7 @@ public:
 	void logoArt();
 	void directoryArt(string text);
 	void loadingArt();
+	void alwaysCenter(string text);
 
 };
 

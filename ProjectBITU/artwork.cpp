@@ -14,14 +14,14 @@ void Artwork::logoArt() {
 	cout << line;
 	std::cout << "\033[97m";
 	cout << R"(
-                                             ________  ______  ___ _____ 
-                                            |  ___|  \/  ||  \/  |/  ___|
-                                            | |__ | .  . || .  . |\ `--. 
-                                            |  __|| |\/| || |\/| | `--. \
-                                            | |___| |  | || |  | |/\__/ /
-                                            \____/\_|  |_/\_|  |_/\____/ 
-
-                                         Elderly Medication Management System    
+                                                 ________  ______  ___ _____ 
+                                                |  ___|  \/  ||  \/  |/  ___|
+                                                | |__ | .  . || .  . |\ `--. 
+                                                |  __|| |\/| || |\/| | `--. \
+                                                | |___| |  | || |  | |/\__/ /
+                                                \____/\_|  |_/\_|  |_/\____/ 
+									       
+                                             Elderly Medication Management System    
           
 )";
 	std::cout << "\033[0m";
@@ -60,4 +60,17 @@ void Artwork::loadingArt() {
 	Sleep(1000);
 	cout << " .\n";
 	Sleep(2000);
+}
+
+//function to make text always in the center of the terminal
+void Artwork::alwaysCenter(string text) {
+
+	CONSOLE_SCREEN_BUFFER_INFO bufferInfo;
+	GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &bufferInfo);
+	int terminalWidth = bufferInfo.srWindow.Right - bufferInfo.srWindow.Left + 1;
+
+	size_t textWidth = text.length();
+	size_t rightPadding = (terminalWidth - textWidth) / 2;
+
+	cout << setw(rightPadding + textWidth) << text << endl;
 }

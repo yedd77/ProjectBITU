@@ -59,7 +59,6 @@ void MedMgmntSub::MedsMgmntMenu() {
 				MedsMgmntMenu();
 			}
 			break;
-
 		}
 	}
 }
@@ -417,7 +416,8 @@ void MedMgmntSub::medsSearch() {
 
 		cout << "1 - Edit medicine's information\n";
 		cout << "2 - Remove medicine from database\n";
-		cout << "3 - Go back to previous menu\n";
+		cout << "3 - Add new batch of stock for this medicines\n";
+		cout << "4 - Go back to previous menu\n";
 		cout << "Enter your option : ";
 
 		cin >> option;
@@ -439,6 +439,9 @@ void MedMgmntSub::medsSearch() {
 			medsRemove(medsData);
 			break;
 		case 3:
+			batchMgmntAdd(medsData);
+			break;
+		case 4:
 			medsMgmntView();
 			break;
 		}
@@ -522,6 +525,9 @@ void MedMgmntSub::medsUpdate(string* medsData) {
 			break;
 		case 2:
 			medsUpdateDesc(medsData);
+			break;
+		case 3:
+			medsMgmntView();
 			break;
 		}
 	} while (continueLoop);
@@ -673,3 +679,164 @@ void MedMgmntSub::medsRemove(string* medsData) {
 	} while (continueLoop);
 }
 
+//function to add new batch of stock for a meds
+void MedMgmntSub::batchMgmntAdd(string* medsData){
+	system("cls");
+	art.logoArt();
+	art.directoryArt("MSMM/Meds Management sub-module/View Medicines/Add New Meds Batch");
+
+	string queryBatch = "SELECT * FROM batches WHERE medsID = '" + medsData[0] + "'";
+	const char* cu = queryBatch.c_str();
+	conState = mysql_query(connection, cu);
+	int batchCount;
+
+	if (!conState) {
+		res = mysql_store_result(connection);
+		batchCount = mysql_num_rows(res);
+
+		//check if there's any batch of this meds
+		if (batchCount == 0) {
+			art.directoryArt("There's no recorded stock for this meds");
+		}
+		else {
+			clitable::Table batchTable;
+			clitable::Column bc[4] = {
+				clitable::Column("Batch ID",  clitable::Column::CENTER_ALIGN, clitable::Column::CENTER_ALIGN, 1, 8, clitable::Column::NON_RESIZABLE),
+				clitable::Column("Batch Quantity",  clitable::Column::CENTER_ALIGN, clitable::Column::CENTER_ALIGN, 1, 19, clitable::Column::NON_RESIZABLE),
+				clitable::Column("Batch Date Entry",  clitable::Column::CENTER_ALIGN, clitable::Column::CENTER_ALIGN, 1, 40, clitable::Column::NON_RESIZABLE),
+				clitable::Column("Batch Expiry Date",  clitable::Column::CENTER_ALIGN, clitable::Column::CENTER_ALIGN, 1, 40, clitable::Column::NON_RESIZABLE)
+			};
+
+			for (int i = 0; i < 4; i++) batchTable.addColumn(bc[i]);
+
+			batchTable.addTitle("Batch Details For : " +medsData[1]+ " (medsID - " +medsData[0]+")");
+
+			int x = 0;
+			while (row = mysql_fetch_row(res)) {
+
+				vector<string> batchData;
+
+				for (int i = 0; i < 5; i++) {
+					if (i == 1) {
+						continue;
+						x++;
+					}
+					else {
+						batchData.push_back(row[i] ? row[i] : "NULL");
+						x++;
+					}
+				}
+
+				string* newBatchData = &batchData[0];
+				batchTable.addRow(newBatchData);
+			}
+			cout << batchTable.draw() << endl;
+
+			char confirm;
+			cout << "\n\x1B[94mYou are about to add new batch of stocks of this medicines.\033[0m\n";
+			cout << "\x1B[94mDo you want to proceed this action?\033[0m\n";
+			cout << "\nEnter your choice (Y/N) : ";
+			cin >> confirm;
+
+			switch (confirm) {
+			case 'Y':
+				break;
+			case 'N':
+				medsMgmntView();
+				break;
+			default:
+				cout << "\n\x1B[31mInvalid input, please try again\033[0m\n";
+				medsMgmntView();
+			}
+		}
+	}
+	else {
+		cout << "\n\x1B[31mQuery error\033[0m\n" << mysql_errno(connection) << endl;
+		exit(0);
+	}
+
+	string batchID, batchQty, batchExpDate, medsID, batchDateEntry;
+
+	//batchID instance
+	//retrieve last record on DB
+	string queryGetLast = "SELECT * FROM batches  WHERE medsID = '" + medsData[0] + " 'ORDER BY batchID DESC LIMIT 1";
+
+	const char* q = queryGetLast.c_str();
+	conState = mysql_query(connection, q);
+
+	if (!conState) {
+		res = mysql_store_result(connection);
+		row = mysql_fetch_row(res);
+	}
+	else {
+		cout << "\x1B[31m\nQuery error\033[0m\n" << mysql_errno(connection) << endl;
+		exit(0);
+	}
+
+	//medsID instance
+	medsID = medsData[0];
+	//convert SQL array to normal string and pass the value to createID
+	string passedID;
+	if (row) {
+		passedID = row[0];
+	}
+	else {
+		passedID = "0000";
+	}
+	batchID = misc.createID(passedID, "BAT");
+
+	//batchQty instance
+
+	boolean keepLoop = true;
+	do {
+		string qty;
+		cout << "\n\x1B[94mPlease enter quantity of stock of this batch\033[0m";
+		cout << "\nEnter batch quantity : ";
+		cin >> qty;
+
+		if (!misc.isNumeric(qty)) {
+			qty.clear();
+			cin.clear();
+			cin.ignore(INT_MAX, '\n');
+			cout << "\x1B[33mInvalid response, please try again\033[0m\n";
+		}
+		else {
+			batchQty = qty;
+
+			break;
+		}
+	} while (true);
+
+	//Expiry date instance
+	do {
+		cout << "\n\x1B[94mPlease enter batch expiry date using this format YYYY-MM-DD ex: 2029-12-01\033[0m";
+		cout << "\nEnter batch expiry date : ";
+		cin >> batchExpDate;
+
+		if (misc.isValidDateFormat(batchExpDate)) {
+			break;
+		}
+	} while (true);
+
+	string insertQuery = "INSERT INTO batches "
+		"(batchID, medsID, batchQuantity, batchDateEntry, batchExpiry ) "
+		"VALUES "
+		"('" + batchID + "', '" + medsID + "', '" + batchQty + "',  CURRENT_DATE() , '" + batchExpDate + "')";
+
+	const char* q2 = insertQuery.c_str();
+	conState = mysql_query(connection, q2);
+
+	//check query execution
+	if (!conState) {
+		cout << "\n\x1B[32mBatch successfully added to database\033[0m\n";
+	}
+	else {
+		cout << "\n\x1B[31mQuery error\033[0m\n" << mysql_errno(connection) << endl;
+		exit(0);
+	}
+
+	cout << "Directing you back to previous menu\n";
+
+	system("pause");
+	MedsMgmntMenu();
+}
