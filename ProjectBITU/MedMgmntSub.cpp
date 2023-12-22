@@ -696,7 +696,7 @@ void MedMgmntSub::batchMgmntAdd(string* medsData){
 
 		//check if there's any batch of this meds
 		if (batchCount == 0) {
-			art.directoryArt("There's no recorded stock for this meds");
+			art.directoryArt("There's no recorded stock for " + medsData[1] + " (medsID - " + medsData[0] + ")");
 		}
 		else {
 			clitable::Table batchTable;
