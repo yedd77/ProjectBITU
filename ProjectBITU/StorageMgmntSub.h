@@ -10,6 +10,8 @@ class StorageMgmntSub {
 public:
 
 	void StorageMgmntMenu();
+	string getMedicineBatchesID();
+	void StorageMgmntUpdateBatches(string ID);
 	/*void StorageMgmntView();
 	void StorageSearch();
 	void StorageUpdate(string* StorageData);
