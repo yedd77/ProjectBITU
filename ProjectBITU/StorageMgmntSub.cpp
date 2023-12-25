@@ -275,10 +275,108 @@ void StorageMgmntSub::StorageMgmntUpdateBatches(string ID){
 		
 		batchTable.addRow(updatedData);	
 		cout << batchTable.draw() << endl;
-		system("pause");
+		mysql_free_result(res);
+
+		int option = 0;
+		cout << "\n\x1B[94mYou're about to modify the information of this batches.\033[0m";
+		cout << "\n\x1B[94mPlease make sure the information you provide matches the inventory in stocks\033[0m";
+		cout << "\n\x1B[94mPlease select the information that you want to update\033[0m\n\n";
+
+		cout << "1 - Batch Quantity\n";
+		cout << "2 - Batch Date Expiry\n";
+		cout << "3 - Go back to previous menu\n\n";
+		cout << "Please enter your choice : ";
+		cin >> option;
+
+		if (cin.fail()) {
+			cin.clear();
+			cin.ignore();
+			cout << "\n\x1B[31mInvalid input, please try again\033[0m\n";
+			system("pause");
+			StorageMgmntUpdateBatches(ID);
+		}
+		else {
+			switch (option) {
+			case 1:
+				StorageMgmntUpdateBatchesQuantity(ID, updatedData[1]);
+				break;
+			case 2:
+				StorageMgmntUpdateBatchesExpiry(ID, updatedData[2]);
+				break;
+			case 3:
+				cout << "\nRedirecting you back to previous menu\n";
+				system("pause");
+				StorageMgmntMenu();
+				break;
+			}
+		}
 	}
 	else {
 		cout << "\n\x1B[31mQuery error\033[0m\n" << mysql_errno(connection) << endl;
 	}
+}
+
+//this function take batches ID and prompt the user to enter the new quantity
+//then update the quantity in the database
+void StorageMgmntSub::StorageMgmntUpdateBatchesQuantity(string ID, string oldQty){
+
+	string newQuantity;
+	
+	do {
+		cout << "\n\nCurrent batch quantity " << oldQty;
+		cout << "\n\x1B[94mPlease enter batch expiry date using this format YYYY-MM-DD ex: 2029-12-01\033[0m";
+		cout << "\nEnter new quantity : ";
+		cin >> newQuantity;
+
+		if (!misc.isNumeric(newQuantity)) {
+			newQuantity.clear();
+			cin.clear();
+			cin.ignore(INT_MAX, '\n');
+			cout << "\x1B[33mInvalid response, please try again\033[0m\n";
+		}
+		else if (stoi(newQuantity) < 0) {
+			newQuantity.clear();
+			cin.clear();
+			cin.ignore(INT_MAX, '\n');
+			cout << "\x1B[33mQuantity must above 1, please try again\033[0m\n";
+		}
+		else {	
+			break;
+		}
+	} while (true);
+
+	string query = "UPDATE batches SET batchQuantity = '" + newQuantity + "' WHERE batchID = '" + ID + "'";
+	const char* q = query.c_str();
+	conState = mysql_query(connection, q);
+
+	cout << "\n\x1B[32mBatch's quantity has been successfully updated\033[0m\n";
+	system("pause");
+	StorageMgmntMenu();
+}
+
+//this function take batches ID and prompt the user to enter the new expiry date
+//then update the expiry date in the database
+void StorageMgmntSub::StorageMgmntUpdateBatchesExpiry(string ID, string oldQty){
+
+	string newExpiryDate;
+
+	do {
+		cout << "\n\nCurrent batch expiry date " << oldQty << endl;
+		cout << "\x1B[94mPlease enter batch expiry date\033[0m";
+		cout << "\nEnter new expiry date : ";
+		cin >> newExpiryDate;
+
+		if (misc.isValidDateFormat(newExpiryDate)) {
+			break;
+		}
+	} while (true);
+
+	string query = "UPDATE batches SET batchExpiry = '" + newExpiryDate + "' WHERE batchID = '" + ID + "'";
+	const char* q = query.c_str();
+	conState = mysql_query(connection, q);
+
+	cout << "\n\x1B[32mBatch's expiry date has been successfully updated\033[0m\n";
+	system("pause");
+	StorageMgmntMenu();
 }
 

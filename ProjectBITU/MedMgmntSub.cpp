@@ -542,7 +542,7 @@ void MedMgmntSub::medsUpdatePrice(string* medsData) {
 	//meds price
 	do {
 		cout << "\n\nCurrent medicine's price : RM " << medsData[4] << endl;
-		cout << "\n\x1B[94mPlease enter medication price\033[0m";
+		cout << "\n\x1B[94mPlease enter new medication price\033[0m";
 		cout << "\nEnter medicine's price (RM) : ";
 
 		if (!(cin >> price)) {
