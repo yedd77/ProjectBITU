@@ -46,7 +46,7 @@ void StorageMgmntSub::StorageMgmntMenu(){
 			StorageMgmntUpdateBatches(getMedicineBatchesID());
 			break;
 		case 2:
-			//StorageMgmntView();
+			StorageMgmntDeleteBatches(getMedicineBatchesID());
 			break;
 		case 3:
 			//StorageMgmntView();
@@ -210,6 +210,7 @@ string StorageMgmntSub::getMedicineBatchesID(){
 			if (!conState) {
 				res = mysql_store_result(connection);
 				if (mysql_num_rows(res) > 0) {
+					cout << "\n\x1B[32mBatches found\033[0m\n\n";
 					system("pause");
 					return batchID;
 					break;
@@ -313,6 +314,7 @@ void StorageMgmntSub::StorageMgmntUpdateBatches(string ID){
 	}
 	else {
 		cout << "\n\x1B[31mQuery error\033[0m\n" << mysql_errno(connection) << endl;
+		exit(0);
 	}
 }
 
@@ -380,3 +382,86 @@ void StorageMgmntSub::StorageMgmntUpdateBatchesExpiry(string ID, string oldQty){
 	StorageMgmntMenu();
 }
 
+
+//this function take batches ID and prompt the user to confirm the deletion
+//then delete the batch from the database
+void StorageMgmntSub::StorageMgmntDeleteBatches(string ID){
+
+	system("cls");
+	art.logoArt();
+	art.directoryArt("MSMM/Storage Management sub-module/Delete batch record");
+	
+	//define sql statement and connection state
+	string query = "SELECT * FROM batches WHERE batchID = '" + ID + "'";
+	const char* q = query.c_str();
+	conState = mysql_query(connection, q);
+
+	if (!conState) {
+
+		res = mysql_store_result(connection);
+		row = mysql_fetch_row(res);
+
+		clitable::Table batchTable;
+		clitable::Column bc[4] = {
+			clitable::Column("Batch ID",  clitable::Column::CENTER_ALIGN, clitable::Column::CENTER_ALIGN, 1, 8, clitable::Column::NON_RESIZABLE),
+			clitable::Column("Batch Quantity",  clitable::Column::CENTER_ALIGN, clitable::Column::CENTER_ALIGN, 1, 19, clitable::Column::NON_RESIZABLE),
+			clitable::Column("Batch Date Entry",  clitable::Column::CENTER_ALIGN, clitable::Column::CENTER_ALIGN, 1, 40, clitable::Column::NON_RESIZABLE),
+			clitable::Column("Batch Expiry Date",  clitable::Column::CENTER_ALIGN, clitable::Column::CENTER_ALIGN, 1, 40, clitable::Column::NON_RESIZABLE)
+		};
+
+		for (int i = 0; i < 4; i++) batchTable.addColumn(bc[i]);
+
+		string updatedData[4];
+		int x = 0;
+
+		for (int i = 0; i < 5; i++) {
+			if (i == 1) {
+				continue;
+				x++;
+			}
+			else {
+				updatedData[x] = row[i];
+				x++;
+			}
+		}
+
+		batchTable.addRow(updatedData);
+		cout << batchTable.draw() << endl;
+		mysql_free_result(res);
+
+		bool continueLoop = true;
+
+		do {
+
+			char confirm;
+			cout << "\x1B[33mYou are about to remove this batch record, please make sure the inventory in stock is allign with this action\033[0m\n";
+			cout << "\x1B[33mAre you sure want to remove this batch?\033[0m\n";
+			cout << "\nEnter your choice (Y/N) : ";
+			cin >> confirm;
+
+			switch (confirm) {
+				case 'Y':
+				case 'y':
+					query = "DELETE FROM batches WHERE batchID = '" + ID + "'";
+					q = query.c_str();
+					conState = mysql_query(connection, q);
+
+					cout << "\n\x1B[32mBatch's record has been successfully deleted\033[0m\n";
+					system("pause");
+					StorageMgmntMenu();
+					break;
+				case 'N':
+				case 'n':
+					cout << "\n\x1B[31mAction cancelled\033[0m\n";
+					cout << "Redirecting you back to previous menu\n";
+					system("pause");
+					StorageMgmntMenu();
+					break;
+			}
+		}while(continueLoop);
+	}
+	else {
+		cout << "\n\x1B[31mQuery error\033[0m\n" << mysql_errno(connection) << endl;
+		exit(0);
+	}
+}
