@@ -639,7 +639,7 @@ void MedMgmntSub::medsRemove(string* medsData) {
 	table.addRow(updatedData);
 	cout << table.draw();
 
-	bool continueLoop = true;	
+	bool continueLoop = true;
 
 	do {
 		char confirm;
@@ -680,7 +680,7 @@ void MedMgmntSub::medsRemove(string* medsData) {
 }
 
 //function to add new batch of stock for a meds
-void MedMgmntSub::batchMgmntAdd(string* medsData){
+void MedMgmntSub::batchMgmntAdd(string* medsData) {
 	system("cls");
 	art.logoArt();
 	art.directoryArt("MSMM/Meds Management sub-module/View Medicines/Add New Meds Batch");
@@ -709,7 +709,7 @@ void MedMgmntSub::batchMgmntAdd(string* medsData){
 
 			for (int i = 0; i < 4; i++) batchTable.addColumn(bc[i]);
 
-			batchTable.addTitle("Batch Details For : " +medsData[1]+ " (medsID - " +medsData[0]+")");
+			batchTable.addTitle("Batch Details For : " + medsData[1] + " (medsID - " + medsData[0] + ")");
 
 			int x = 0;
 			while (row = mysql_fetch_row(res)) {
@@ -786,8 +786,6 @@ void MedMgmntSub::batchMgmntAdd(string* medsData){
 	batchID = misc.createID(passedID, "BAT");
 
 	//batchQty instance
-
-	boolean keepLoop = true;
 	do {
 		string qty;
 		cout << "\n\x1B[94mPlease enter quantity of stock of this batch\033[0m";

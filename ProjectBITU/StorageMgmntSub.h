@@ -15,6 +15,7 @@ public:
 	void StorageMgmntUpdateBatchesQuantity(string ID, string oldQty);
 	void StorageMgmntUpdateBatchesExpiry(string ID, string oldQty);
 	void StorageMgmntDeleteBatches(string ID);
+	void splitMedicineBatches();
 	/*void StorageMgmntView();
 	void StorageSearch();
 	void StorageUpdate(string* StorageData);
