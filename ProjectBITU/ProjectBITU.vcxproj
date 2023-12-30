@@ -134,6 +134,7 @@
     <ClCompile Include="Auth.cpp" />
     <ClCompile Include="MedMgmntSub.cpp" />
     <ClCompile Include="MedStrgModule.cpp" />
+    <ClCompile Include="ResidentMgmntModule.cpp" />
     <ClCompile Include="Source.cpp" />
     <ClCompile Include="staffMngmtModule.cpp" />
     <ClCompile Include="StorageMgmntSub.cpp" />
@@ -145,6 +146,7 @@
     <ClInclude Include="MedMgmntSub.h" />
     <ClInclude Include="MedStrgModule.h" />
     <ClInclude Include="Misc.h" />
+    <ClInclude Include="ResidentMgmntModule.h" />
     <ClInclude Include="staffMngmtModule.h" />
     <ClInclude Include="StorageMgmntSub.h" />
     <ClInclude Include="SuperAdmin.h" />

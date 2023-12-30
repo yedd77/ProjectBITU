@@ -5,6 +5,7 @@
 #include "SuperAdmin.h"
 #include "MedStrgModule.h"
 #include "staffMngmtModule.h"
+#include "ResidentMgmntModule.h"
 
 using namespace std;
 
@@ -12,6 +13,7 @@ extern Artwork art;
 extern Auth auth;
 StaffMngmtModule staffModule;
 MedStrgModule meds;
+ResidentMgmntModule resident;
 
 void SuperAdmin::superAdminMenu() {
 
@@ -46,11 +48,11 @@ void SuperAdmin::superAdminMenu() {
 			meds.nurseModuleMenu(); 
 			break;
 		case 2:
-			// RMM Module
-			// TODO
+			cout << "\nRedirecting you to Resident Management Module\n";
+			system("pause");
+			resident.residentMenu();
 			break;
 		case 3:
-			// SMM
 			cout << "\nRedirecting you to Staff Management Module\n";
 			system("pause");
 			staffModule.staffMenu();

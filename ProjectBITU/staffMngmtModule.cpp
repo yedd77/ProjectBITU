@@ -47,7 +47,7 @@ void StaffMngmtModule::staffMenu(){
 			staffRegistration();
 			break;
 		case 2:
-			cout << "\nRedirecting you to Staff List View\n";
+			cout << "\nRedirecting you to Staff List\n";
 			system("pause");
 			staffListView();
 			break;
@@ -57,6 +57,7 @@ void StaffMngmtModule::staffMenu(){
 			admin.superAdminMenu();
 			break;
 		case 4:
+			cout << "\nRedirectin you to log out page\n";
 			system("pause");
 			if (!auth.logout()) {
 				staffMenu();
@@ -81,7 +82,7 @@ void StaffMngmtModule::staffRegistration(){
 
 	//keep looping until all condition are met
 	do {
-		cout << "Enter new user IC : ";
+		cout << "Enter new user IC number : ";
 		cin >> userIC;
 
 		//IC validation 
@@ -109,7 +110,6 @@ void StaffMngmtModule::staffRegistration(){
 
 	cout << "User did not exist in database\n";
 	cout << "\n\x1B[94mPlease provide more information\n\033[0m\n";
-
 
 	do {
 		cout << "Enter user's name : ";
@@ -200,6 +200,7 @@ void StaffMngmtModule::staffRegistration(){
 
 	//convert SQL array to normal string and pass the value to createID 
 	string passedID = row[0];
+
 	userID = misc.createID(passedID, "STF");
 
 	string insertQuery =
@@ -256,7 +257,7 @@ void StaffMngmtModule::staffListView(){
 		//add column to the table
 		for (int i = 0; i < 5; i++) {table.addColumn(c[i]);}
 
-		while ((row = mysql_fetch_row(res))) {
+		while (row = mysql_fetch_row(res)) {
 			vector<string> row_data; // Create vector to hold data
 
 			// Copy each field from the MySQL row into the vector

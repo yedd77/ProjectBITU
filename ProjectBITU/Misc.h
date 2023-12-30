@@ -9,6 +9,7 @@
 #include <regex>
 #include <vector>
 #include <ctime>
+#include <cstring>
 
 using namespace std;
 
@@ -32,6 +33,7 @@ public:
 		return true;
 	}
 
+	//function to check if user IC exist in database
 	bool checkUserExist(string userIC) {
 
 		//define sql statement and connection state
@@ -71,6 +73,29 @@ public:
 
 			//check if meds exist in database
 			if (medsCount != 0) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	//function to check if resident IC exist in database
+	bool checkResidentExist(string resIC) {
+
+		//define sql statement and connection state
+		string query = "SELECT COUNT(*) FROM residents WHERE resIC ='" + resIC + "'";
+		const char* cu = query.c_str();
+		conState = mysql_query(connection, cu);
+
+		//check query execution
+		if (!conState) {
+			res = mysql_store_result(connection);
+			row = mysql_fetch_row(res);
+			int resCount = atoi(row[0]);
+			mysql_free_result(res);
+
+			//check if resident exist in database
+			if (resCount != 0) {
 				return true;
 			}
 		}
@@ -160,6 +185,41 @@ public:
 		int day = stoi(date.substr(8, 2));
 		if (day >= 31 && day <= 1) {
 			cout << "\x1B[33mInvalid expiry date, please try again\033[0m\n";
+			return false;
+		}
+		return true;
+	}
+
+	//function to check the format of the room number
+	//A-1-9
+	bool isValidRoomNum(string roomNum) {
+
+		//declare valid blocks, floors and rooms
+		const char validBlocks[6] = { 'A', 'B', 'C', 'D', 'E', 'F' };
+		const char validFloors[2] = { '1', '2' };
+		const char validRooms[9] = { '1', '2', '3', '4', '5', '6', '7', '8', '9' };
+
+		//check if the room number format is valid
+		if (roomNum.length() != 5 || roomNum[1] != '-' || roomNum[3] != '-') {
+			cout << "\x1B[33mInvalid room number format, please try again\033[0m\n";
+			return false;
+		}
+
+		//check if the block given by user is valid
+		if (!strchr(validBlocks, roomNum[0])) {
+			cout << "\x1B[33mInvalid block, please try again\033[0m\n";
+			return false;
+		}
+
+		//check if the floor given by user is valid
+		if (!strchr(validFloors, roomNum[2])) {
+			cout << "\x1B[33mInvalid floor, please try again\033[0m\n";
+			return false;
+		}
+
+		//check if the room given by user is valid
+		if (!strchr(validRooms, roomNum[4])) {
+			cout << "\x1B[33mInvalid room, please try again\033[0m\n";
 			return false;
 		}
 		return true;

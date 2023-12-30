@@ -17,7 +17,7 @@ extern Artwork art;
 extern SuperAdmin admin;
 
 //function to initialize the system if the system hasnt been initialize before
-bool Auth::firstTimeSetup(){
+bool Auth::firstTimeSetup() {
 
 	string query = "SELECT COUNT(*) FROM users WHERE staffID='STF0001'";
 	const char* cu = query.c_str();
@@ -266,7 +266,7 @@ void  Auth::hasPassChanged(string* userData) {
 	}
 }
 
-void Auth::seperateUserMenu(string* userData){
+void Auth::seperateUserMenu(string* userData) {
 
 	int userRole = stoi(userData[5]);
 	switch (userRole) {
@@ -290,7 +290,7 @@ void Auth::seperateUserMenu(string* userData){
 	}
 }
 
-bool Auth::logout(){
+bool Auth::logout() {
 
 	system("cls");
 	art.logoArt();
