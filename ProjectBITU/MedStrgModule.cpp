@@ -4,6 +4,7 @@
 #include "Auth.h"
 #include "MedMgmntSub.h"
 #include "StorageMgmntSub.h"
+#include "PreMgmntSubModule.h"
 
 using namespace std;
 
@@ -11,6 +12,7 @@ extern Auth auth;
 extern Artwork art;
 MedMgmntSub medMgmntSub;
 StorageMgmntSub storageMgmntSub;
+PreMgmntSubModule preMgmntSub;
 
 //this function shows the menu for the medicine storage management module (MSMM)
 //the menu include sub-module under this module such as medicine management, 
@@ -49,8 +51,7 @@ void MedStrgModule::nurseModuleMenu(){
 			storageMgmntSub.StorageMgmntMenu();
 			break;
 		case 3:
-			// Prescription Management sub-module
-			// TODO
+			preMgmntSub.preMgmntMenu();
 			break;
 		case 4:
 			system("pause");

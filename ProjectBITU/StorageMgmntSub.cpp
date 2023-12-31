@@ -640,7 +640,6 @@ void StorageMgmntSub::splitMedicineBatches() {
 							else {
 								cout << "\n\x1B[31mBatch for that medicines not found, Please try again\033[0m\n\n";
 								system("pause");
-								StorageMgmntMenu();
 							}
 						}
 						else {

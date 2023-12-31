@@ -45,6 +45,9 @@
     <ClCompile Include="ResidentMgmntModule.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="PreMgmntSubModule.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="table.h">
@@ -75,6 +78,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ResidentMgmntModule.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PreMgmntSubModule.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
