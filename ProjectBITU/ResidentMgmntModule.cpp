@@ -51,7 +51,7 @@ void ResidentMgmntModule::residentMenu(){
 		case 2:
 			cout << "\nRedirecting you to Resident List\n";
 			system("pause");
-			//residentListView();
+			residentListView();
 			break;
 		case 3:
 			cout << "\nRedirecting you back to Main Menu\n";
@@ -278,6 +278,10 @@ void ResidentMgmntModule::residentRegistration(){
 		cout << staffTable.draw() << endl;
 		mysql_free_result(res);
 	}
+	else {
+		cout << "\x1B[31m\nQuery error\033[0m\n" << mysql_errno(connection) << endl;
+		exit(0);
+	}
 
 	//check if the staff exist in the database
 	do {
@@ -328,4 +332,218 @@ void ResidentMgmntModule::residentRegistration(){
 		cout << "\x1B[31m\nQuery error\033[0m\n" << mysql_errno(connection) << endl;
 		exit(0);
 	}
+}
+
+//this function is called after a user select it from residentMenu()
+//this function gonna display all the resident in the database
+//and ask the user what they want to do with the resident
+void ResidentMgmntModule::residentListView(){
+
+	system("cls");
+	art.logoArt();
+	art.directoryArt("Main Module Menu/ Resident Management Module/Resident Management Menu/Resident List");
+
+	string getResidentData = "SELECT r.resID, r.resIC, r.resName, u.staffName, r.resRoomNum "
+		"FROM residents r "
+		"JOIN users u ON r.staffID = u.staffID ";
+	const char* q = getResidentData.c_str();
+	conState = mysql_query(connection, q);
+
+	clitable::Table residentTable;
+	clitable::Column column[5] = {
+		clitable::Column("Resident ID",  clitable::Column::CENTER_ALIGN, clitable::Column::CENTER_ALIGN, 1, 8, clitable::Column::NON_RESIZABLE),
+		clitable::Column("Resident IC",  clitable::Column::CENTER_ALIGN, clitable::Column::CENTER_ALIGN, 1, 13, clitable::Column::NON_RESIZABLE),
+		clitable::Column("Resident Name",  clitable::Column::CENTER_ALIGN, clitable::Column::LEFT_ALIGN, 1, 30, clitable::Column::NON_RESIZABLE),
+		clitable::Column("Staff Assigned",  clitable::Column::CENTER_ALIGN, clitable::Column::LEFT_ALIGN, 1, 30, clitable::Column::NON_RESIZABLE),
+		clitable::Column("Room Number",  clitable::Column::CENTER_ALIGN, clitable::Column::CENTER_ALIGN, 1, 5, clitable::Column::NON_RESIZABLE)
+	};
+
+	for(int i=0; i<5; i++){residentTable.addColumn(column[i]);}
+
+	if (!conState) {
+		res = mysql_store_result(connection);
+		
+		while (row = mysql_fetch_row(res)) {
+			vector<string> rowTable;
+			for (int i = 0; i < 5; i++) { rowTable.push_back(row[i] ? row[i] : "NULL"); }
+			string* userData = &rowTable[0];
+			residentTable.addRow(userData);
+		}
+		mysql_free_result(res);
+	}
+	else {
+		cout << "\x1B[31m\nQuery error\033[0m\n" << mysql_errno(connection) << endl;
+		exit(0);
+	}
+	cout << residentTable.draw() << endl; 
+
+	string resID;
+	do {
+		cout << "\n\x1B[94mPlease select the resident you want to select\033[0m\n";
+		cout << "Enter resident ID : ";
+		cin >> resID;
+		cin.clear();
+		cin.ignore(INT_MAX, '\n');
+
+		//check if the resident exist in the database
+		string checkResident = "SELECT COUNT(*) FROM residents WHERE resID = '" + resID + "'";
+		const char* qn = checkResident.c_str();
+		conState = mysql_query(connection, qn);
+		
+		if (!conState) {
+			res = mysql_store_result(connection);
+			if (mysql_num_rows(res) > 0) {
+				cout << "\n\x1B[32mResident found\033[0m\n";
+				break;
+			}
+		}
+		else {
+			cout << "\x1B[31m\nQuery error\033[0m\n" << mysql_errno(connection) << endl;
+			exit(0);
+		}
+
+	} while (true);
+
+	do {
+		cout << "\n\x1B[94mPlease select your next action\033[0m\n\n";
+
+		cout << "1 - Update Resident Information\n";
+		cout << "2 - Remove Resident\n";
+		cout << "3 - Go back to Resident Management Menu\n";
+
+		cout << "\nEnter your choice : ";
+
+		int option;
+		cin >> option;
+
+		if (cin.fail()) {
+			cin.clear();
+			cin.ignore();
+			cout << "\n\n\x1B[91mInvalid input! Please enter a number.\033[0m\n\n";
+			system("pause");
+			residentListView();
+		}
+		else {
+			switch (option) {
+			case 1:
+				cout << "\nRedirecting you to update resident information page\n";
+				system("pause");
+				updateResident(resID);
+				break;
+			case 2:
+				cout << "\nRedirecting you to remove resident page\n";
+				system("pause");
+				//REMOVE
+				break;
+			case 3:
+				cout << "\nRedirecting you back to Resident Management Menu\n";
+				system("pause");
+				residentMenu();
+				break;
+			case 4:
+				cout << "\nRedirecting you to log out page\n";
+				system("pause");
+				if (!auth.logout()) {
+					residentListView();
+				}
+				break;
+			}
+		}
+	} while (true);
+}
+
+//this function is called after a user select it from residentListView()
+//this function gonna display all the resident information
+//this function going to show all update "able" information of the resident
+//and ask the user what they want to update
+void ResidentMgmntModule::updateResident(string resID){
+
+	system("cls");
+	art.logoArt();
+	art.directoryArt("Main Module Menu/ Resident Management Module/Resident Management Menu/Update Resident");
+
+	//define sql query
+	string getResidentData = "SELECT r.resID, r.resIC, r.resName, r.resRoomNum, r.resGuardName, resGuardPhone "
+		"FROM residents r "
+		"WHERE r.resID = '" + resID + "'";
+	const char* q = getResidentData.c_str();
+	conState = mysql_query(connection, q);
+
+	clitable::Table residentTable;
+	clitable::Column column[6] = {
+		clitable::Column("Resident ID",  clitable::Column::CENTER_ALIGN, clitable::Column::CENTER_ALIGN, 1, 8, clitable::Column::NON_RESIZABLE),
+		clitable::Column("Resident IC",  clitable::Column::CENTER_ALIGN, clitable::Column::CENTER_ALIGN, 1, 13, clitable::Column::NON_RESIZABLE),
+		clitable::Column("Resident Name",  clitable::Column::CENTER_ALIGN, clitable::Column::LEFT_ALIGN, 1, 24, clitable::Column::NON_RESIZABLE),
+		clitable::Column("Room  Number",  clitable::Column::CENTER_ALIGN, clitable::Column::CENTER_ALIGN, 1, 5, clitable::Column::NON_RESIZABLE),
+		clitable::Column("Guardian Name",  clitable::Column::CENTER_ALIGN, clitable::Column::LEFT_ALIGN, 1, 24, clitable::Column::NON_RESIZABLE),
+		clitable::Column("Guardian Phone",  clitable::Column::CENTER_ALIGN, clitable::Column::LEFT_ALIGN, 1, 15, clitable::Column::NON_RESIZABLE)
+	};
+
+	for(int i=0; i<6; i++){residentTable.addColumn(column[i]);}
+
+	if (!conState) {
+		res = mysql_store_result(connection);
+		row = mysql_fetch_row(res);
+		string residentData[6];
+		for(int i =0; i<6; i++){residentData[i] = row[i] ? row[i] : "NULL";}
+		residentTable.addRow(residentData);
+	}
+	else {
+		cout << "\x1B[31m\nQuery error\033[0m\n" << mysql_errno(connection) << endl;
+		exit(0);
+	}
+	cout << residentTable.draw() << endl;
+	
+	boolean continueLoop = true;
+	do {
+		int option;
+		cout << "\n\x1B[94mPlease select your next action\033[0m\n\n";
+		cout << "1 - Update Resident Name\n";
+		cout << "2 - Update Room Number\n";
+		cout << "3 - Update Guardian Name\n";
+		cout << "4 - Update Guardian Phone Number\n";
+		cout << "5 - Go back to Resident List\n";
+		cin >> option;
+
+		if (cin.fail()){
+			cin.clear();
+			cin.ignore();
+			cout << "\n\x1B[31mInvalid input, please try again\033[0m\n";
+			system("pause");
+		}
+		else {
+			switch (option) {
+			case 1:
+				cout << "\nRedirecting you to update resident name page\n";
+				system("pause");
+				//UPDATE name
+				continueLoop = false;
+				break;
+			case 2:
+				cout << "\nRedirecting you to update room number page\n";
+				system("pause");
+				//UPDATE room number
+				continueLoop = false;
+				break;
+			case 3:
+				cout << "\nRedirecting you to update guardian name page\n";
+				system("pause");
+				//UPDATE guardian name
+				continueLoop = false;
+				break;
+			case 4:
+				cout << "\nRedirecting you to update guardian phone number page\n";
+				system("pause");
+				//UPDATE guardian phone number
+				continueLoop = false;
+				break;
+			case 5 :
+				cout << "\nRedirecting you back to Resident List\n";
+				system("pause");
+				residentListView();
+				break;
+			}
+		}
+		
+	} while (continueLoop);
 }

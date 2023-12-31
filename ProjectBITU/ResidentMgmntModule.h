@@ -10,5 +10,7 @@ class ResidentMgmntModule {
 public:
 	void residentMenu();
 	void residentRegistration();
+	void residentListView();
+	void updateResident(string resID);
 };
 #endif // !RESIDENTMGMNTMODULE_H
