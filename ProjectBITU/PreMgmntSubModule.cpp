@@ -47,10 +47,9 @@ void PreMgmntSubModule::preMgmntMenu() {
 			break;
 		case 2:
 			removePrescription();
-
 			break;
 		case 3:
-			//view prescription
+			viewPrescription();
 			break;
 		case 4:
 			cout << "\nRedirecting you to previous menu\n";
@@ -321,8 +320,7 @@ void PreMgmntSubModule::addPrescription() {
 }
 
 //function handle removing prescription
-//the user will be shown a list of resident with prescription and need to choose one
-//the user will be shown a list of prescription of the selected resident and need to choose one
+// this function will revoke getResidentID() and getPrescriptionID() consecutively
 //the user will be asked to confirm the action
 void PreMgmntSubModule::removePrescription(){
 	
@@ -333,6 +331,101 @@ void PreMgmntSubModule::removePrescription(){
 	string resID, preID;
 
 	//resident ID
+	resID = getResidentID(resID);
+
+	system("cls");
+	art.logoArt();
+	art.directoryArt("MSMM/Prescription Management sub-module/Remove prescription");
+
+	//prescription ID
+	preID = getPrescriptionID("to remove", resID);
+
+	//Confirmation
+	do {
+		char confirm;
+		cout << "\n\x1B[94mYou are about to remove prescription\033[0m\n";
+		cout << "\x1B[94mDo you want to proceed this action?\033[0m\n";
+		cout << "\nEnter your choice (Y/N) : ";
+		cin >> confirm;
+		
+		if (confirm == 'Y' || confirm == 'y') {
+			break;
+		}
+		else if (confirm == 'N' || confirm == 'n') {
+			cout << "\nRedirecting you to previous menu\n";
+			system("pause");
+			preMgmntMenu();
+		}
+		else {
+			cout << "\n\033[1;31mInvalid input, please try again\033[0m\n";
+			system("pause");
+		}
+	} while (true);
+
+	//define sql statement to remove selected prescription
+	string removePrescription = "DELETE FROM prescriptions "
+		"WHERE prescriptID = '" + preID + "'";
+	const char* rp = removePrescription.c_str();
+	conState = mysql_query(connection, rp);
+
+	if (!conState) {
+		cout << "\n\x1B[32mPrescription removed successfully\033[0m\n";
+		system("pause");
+		preMgmntMenu();
+	}
+	else {
+		cout << "\n\x1B[31mQuery error\033[0m\n" << mysql_errno(connection) << endl;
+		exit(0);
+	}
+}
+
+//this function handle removing prescription
+//revoked by viewPrescription() with 2 parameters
+void PreMgmntSubModule::removePrescription(string resID, string preID){
+
+	//Confirmation
+	do {
+		char confirm;
+		cout << "\n\x1B[94mYou are about to remove prescription\033[0m\n";
+		cout << "\x1B[94mDo you want to proceed this action?\033[0m\n";
+		cout << "\nEnter your choice (Y/N) : ";
+		cin >> confirm;
+
+		if (confirm == 'Y' || confirm == 'y') {
+			break;
+		}
+		else if (confirm == 'N' || confirm == 'n') {
+			cout << "\nRedirecting you to previous menu\n";
+			system("pause");
+			preMgmntMenu();
+		}
+		else {
+			cout << "\n\033[1;31mInvalid input, please try again\033[0m\n";
+			system("pause");
+		}
+	} while (true);
+
+	//define sql statement to remove selected prescription
+	string removePrescription = "DELETE FROM prescriptions "
+		"WHERE prescriptID = '" + preID + "'";
+	const char* rp = removePrescription.c_str();
+	conState = mysql_query(connection, rp);
+
+	if (!conState) {
+		cout << "\n\x1B[32mPrescription removed successfully\033[0m\n";
+		system("pause");
+		preMgmntMenu();
+	}
+	else {
+		cout << "\n\x1B[31mQuery error\033[0m\n" << mysql_errno(connection) << endl;
+		exit(0);
+	}
+}
+
+//the user will be shown a list of resident with prescription 
+//and need to choose one
+string PreMgmntSubModule::getResidentID(string resID){
+
 	clitable::Table residentTable;
 	clitable::Column rc[4] = {
 		clitable::Column("Resident ID",  clitable::Column::CENTER_ALIGN, clitable::Column::CENTER_ALIGN, 1, 8, clitable::Column::NON_RESIZABLE),
@@ -388,7 +481,9 @@ void PreMgmntSubModule::removePrescription(){
 			res = mysql_store_result(connection);
 			if (mysql_num_rows(res) > 0) {
 				cout << "\n\x1B[32mResident found\033[0m\n";
+				row = mysql_fetch_row(res);
 				system("pause");
+				return row[0];
 				break;
 			}
 			else {
@@ -401,12 +496,13 @@ void PreMgmntSubModule::removePrescription(){
 			exit(0);
 		}
 	} while (true);
+}
 
-	system("cls");
-	art.logoArt();
-	art.directoryArt("MSMM/Prescription Management sub-module/Remove prescription");
+//the user will be shown a list of prescription of the selected resident 
+//and need to choose one
+string PreMgmntSubModule::getPrescriptionID(string action, string resID){
 
-	//prescription ID
+	string preID;
 	clitable::Table prescriptionTable;
 	clitable::Column column[4]{
 		clitable::Column("Prescription ID",  clitable::Column::CENTER_ALIGN, clitable::Column::CENTER_ALIGN, 1, 15, clitable::Column::NON_RESIZABLE),
@@ -453,9 +549,9 @@ void PreMgmntSubModule::removePrescription(){
 		exit(0);
 	}
 	cout << prescriptionTable.draw() << endl;
-	
+
 	do {
-		cout << "\n\x1B[94mPlease select the prescription you want to remove\033[0m\n";
+		cout << "\n\x1B[94mPlease select the prescription you want " +action+ "\033[0m\n";
 		cout << "Enter prescription ID : ";
 		cin >> preID;
 		cin.clear();
@@ -473,7 +569,9 @@ void PreMgmntSubModule::removePrescription(){
 			res = mysql_store_result(connection);
 			if (mysql_num_rows(res) > 0) {
 				cout << "\n\x1B[32mPrescription found\033[0m\n";
+				row = mysql_fetch_row(res);
 				system("pause");
+				preID = row[0];
 				break;
 			}
 			else {
@@ -486,42 +584,48 @@ void PreMgmntSubModule::removePrescription(){
 			exit(0);
 		}
 	} while (true);
+	return string();
+}
 
-	//Confirmation
+//this function will show the prescription of the selected resident
+void PreMgmntSubModule::viewPrescription(){
+
+	system("cls");
+	art.logoArt();
+	art.directoryArt("MSMM/Prescription Management sub-module/View prescription");
+
+	string resID, preID;
+
+	//get resident ID
+	resID = getResidentID(resID);
+
+	system("cls");
+	art.logoArt();
+	art.directoryArt("MSMM/Prescription Management sub-module/View prescription");
+
+	//prescription ID
+	preID = getPrescriptionID("NULL", resID);
+
 	do {
-		char confirm;
-		cout << "\n\x1B[94mYou are about to remove prescription\033[0m\n";
-		cout << "\x1B[94mDo you want to proceed this action?\033[0m\n";
-		cout << "\nEnter your choice (Y/N) : ";
-		cin >> confirm;
-		
-		if (confirm == 'Y' || confirm == 'y') {
+		char option;
+		//prompt user for next action
+		cout << "\n\x1B[94mPlease select your next action\033[0m\n\n";
+
+		cout << "1 - Remove prescription\n";
+		cout << "2 - Go back to previous menu\n";
+
+		cout << "\nPlease enter your choice : ";
+		cin >> option;
+
+		switch (option) {
+		case '1':
+			removePrescription(resID, preID); 
 			break;
-		}
-		else if (confirm == 'N' || confirm == 'n') {
+		case '2':
 			cout << "\nRedirecting you to previous menu\n";
 			system("pause");
 			preMgmntMenu();
-		}
-		else {
-			cout << "\n\033[1;31mInvalid input, please try again\033[0m\n";
-			system("pause");
+			break;
 		}
 	} while (true);
-
-	//define sql statement to remove selected prescription
-	string removePrescription = "DELETE FROM prescriptions "
-		"WHERE prescriptID = '" + preID + "'";
-	const char* rp = removePrescription.c_str();
-	conState = mysql_query(connection, rp);
-
-	if (!conState) {
-		cout << "\n\x1B[32mPrescription removed successfully\033[0m\n";
-		system("pause");
-		preMgmntMenu();
-	}
-	else {
-		cout << "\n\x1B[31mQuery error\033[0m\n" << mysql_errno(connection) << endl;
-		exit(0);
-	}
 }

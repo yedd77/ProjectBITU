@@ -692,7 +692,7 @@ void MedMgmntSub::batchMgmntAdd(string* medsData) {
 
 	if (!conState) {
 		res = mysql_store_result(connection);
-		batchCount = mysql_num_rows(res);
+		batchCount = static_cast<int>(mysql_num_rows(res));
 
 		//check if there's any batch of this meds
 		if (batchCount == 0) {

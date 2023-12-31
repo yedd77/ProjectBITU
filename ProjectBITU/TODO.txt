@@ -4,4 +4,4 @@ TODO
 [] add search module different with search current function
 [] after add a meds, the system will ask if they want to add the stock for it or not
 [] if no row in table, shows no data
-[] if no data in table, shows no data [prescription]
+[] if no data in table, shows no data [prescription] local Var not init 482 PREMGNTSUB

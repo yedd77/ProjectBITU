@@ -195,9 +195,9 @@ public:
 	bool isValidRoomNum(string roomNum) {
 
 		//declare valid blocks, floors and rooms
-		const char validBlocks[6] = { 'A', 'B', 'C', 'D', 'E', 'F' };
-		const char validFloors[2] = { '1', '2' };
-		const char validRooms[9] = { '1', '2', '3', '4', '5', '6', '7', '8', '9' };
+		const char validBlocks[7] = { 'A', 'B', 'C', 'D', 'E', 'F' , '\0' };
+		const char validFloors[3] = { '1', '2', '\0' };
+		const char validRooms[10] = { '1', '2', '3', '4', '5', '6', '7', '8', '9', '\0' };
 
 		//check if the room number format is valid
 		if (roomNum.length() != 5 || roomNum[1] != '-' || roomNum[3] != '-') {
@@ -205,20 +205,23 @@ public:
 			return false;
 		}
 
+		char checkRoomBlock = roomNum[0];
 		//check if the block given by user is valid
-		if (!strchr(validBlocks, roomNum[0])) {
+		if (!strchr(validBlocks, checkRoomBlock)) {
 			cout << "\x1B[33mInvalid block, please try again\033[0m\n";
 			return false;
 		}
 
+		char checkRoomFloor = roomNum[2];
 		//check if the floor given by user is valid
-		if (!strchr(validFloors, roomNum[2])) {
+		if (!strchr(validFloors, checkRoomFloor)) {
 			cout << "\x1B[33mInvalid floor, please try again\033[0m\n";
 			return false;
 		}
 
+		char checkRoomNum = roomNum[4];
 		//check if the room given by user is valid
-		if (!strchr(validRooms, roomNum[4])) {
+		if (!strchr(validRooms, checkRoomNum)) {
 			cout << "\x1B[33mInvalid room, please try again\033[0m\n";
 			return false;
 		}
