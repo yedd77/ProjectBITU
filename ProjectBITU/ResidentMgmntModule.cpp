@@ -433,7 +433,7 @@ void ResidentMgmntModule::residentListView(){
 			case 2:
 				cout << "\nRedirecting you to remove resident page\n";
 				system("pause");
-				//REMOVE
+				removeResident(resID);
 				break;
 			case 3:
 				cout << "\nRedirecting you back to Resident Management Menu\n";
@@ -503,6 +503,7 @@ void ResidentMgmntModule::updateResident(string resID){
 		cout << "3 - Update Guardian Name\n";
 		cout << "4 - Update Guardian Phone Number\n";
 		cout << "5 - Go back to Resident List\n";
+		cout << "\nEnter your choice : ";
 		cin >> option;
 
 		if (cin.fail()){
@@ -514,27 +515,19 @@ void ResidentMgmntModule::updateResident(string resID){
 		else {
 			switch (option) {
 			case 1:
-				cout << "\nRedirecting you to update resident name page\n";
-				system("pause");
-				//UPDATE name
+				updateResidentName(resID);
 				continueLoop = false;
 				break;
 			case 2:
-				cout << "\nRedirecting you to update room number page\n";
-				system("pause");
-				//UPDATE room number
+				updateResidentRoomNum(resID);
 				continueLoop = false;
 				break;
 			case 3:
-				cout << "\nRedirecting you to update guardian name page\n";
-				system("pause");
-				//UPDATE guardian name
+				updateGuardianName(resID);
 				continueLoop = false;
 				break;
 			case 4:
-				cout << "\nRedirecting you to update guardian phone number page\n";
-				system("pause");
-				//UPDATE guardian phone number
+				updateGuardianContact(resID);
 				continueLoop = false;
 				break;
 			case 5 :
@@ -544,7 +537,6 @@ void ResidentMgmntModule::updateResident(string resID){
 				break;
 			}
 		}
-		
 	} while (continueLoop);
 }
 
@@ -571,7 +563,7 @@ void ResidentMgmntModule::updateResidentName(string resID){
 
 	do {
 		cout << "\n\nCurrent resident name : " << resName;
-		cout << "\n\x1B[94mPlease enter the new resident name\033[0m\n";
+		cout << "\n\n\x1B[94mPlease enter the new resident name\033[0m\n";
 		cout << "Enter new resident name : ";
 		cin.ignore();
 		getline(cin, resName);
@@ -627,7 +619,7 @@ void ResidentMgmntModule::updateResidentRoomNum(string resID){
 
 	do {
 		cout << "\n\nCurrent resident room number : " << resRoomNum;
-		cout << "\n\x1B[94m\nPlease enter resident's room number as in this format Block-Floor-Room Number (A-1-7)\033[0m\n";
+		cout << "\n\n\x1B[94m\nPlease enter resident's room number as in this format Block-Floor-Room Number (A-1-7)\033[0m\n";
 		cout << "Enter resident's room number : ";
 		cin >> resRoomNum;
 
@@ -702,7 +694,7 @@ void ResidentMgmntModule::updateGuardianName(string resID){
 
 	do {
 		cout << "\n\nCurrent resident guardian name : " << resGuardName;
-		cout << "\n\x1B[94mPlease enter the new resident guardian name\033[0m\n";
+		cout << "\n\n\x1B[94mPlease enter the new resident guardian name\033[0m\n";
 		cout << "Enter new resident guardian name : ";
 		cin.ignore();
 		getline(cin, resGuardName);
@@ -758,7 +750,7 @@ void ResidentMgmntModule::updateGuardianContact(string resID){
 
 	do {
 		cout << "\n\nCurrent resident guardian phone number : " << resGuardPhone;
-		cout << "\n\x1B[94mPlease enter the new resident guardian phone number\033[0m\n";
+		cout << "\n\n\x1B[94mPlease enter the new resident guardian phone number\033[0m\n";
 		cout << "Enter new resident guardian phone number : ";
 		cin >> resGuardPhone;
 
