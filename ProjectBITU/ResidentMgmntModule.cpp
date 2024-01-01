@@ -547,3 +547,302 @@ void ResidentMgmntModule::updateResident(string resID){
 		
 	} while (continueLoop);
 }
+
+//this function is called after a user select it from updateResident()
+//handle the update of resident name
+void ResidentMgmntModule::updateResidentName(string resID){
+
+	string resName;
+	string getResidentData = "SELECT r.resName "
+		"FROM residents r "
+		"WHERE r.resID = '" + resID + "'";
+	const char* q = getResidentData.c_str();
+	conState = mysql_query(connection, q);
+
+	if (!conState) {
+		res = mysql_store_result(connection);
+		row = mysql_fetch_row(res);
+		resName = row[0];
+	}
+	else {
+		cout << "\x1B[31m\nQuery error\033[0m\n" << mysql_errno(connection) << endl;
+		exit(0);
+	}
+
+	do {
+		cout << "\n\nCurrent resident name : " << resName;
+		cout << "\n\x1B[94mPlease enter the new resident name\033[0m\n";
+		cout << "Enter new resident name : ";
+		cin.ignore();
+		getline(cin, resName);
+
+		if (resName.length() > 128) {
+			cout << "\n\x1B[33mResident's name was too long\033[0m\n";
+			cout << "\x1B[33mPlease try again\033[0m\n";
+			resName.clear();
+		}
+		else {
+			break;
+		}
+	} while (true);
+
+	string updateResidentName = "UPDATE residents "
+		"SET resName = '" + resName + "' "
+		"WHERE resID = '" + resID + "'";
+	const char* x = updateResidentName.c_str();
+	conState = mysql_query(connection, x);
+
+	if (!conState) {
+		cout << "\n\x1B[32mResident name successfully updated\033[0m\n";
+		cout << "\x1B[32mRedirecting you back to Resident List\033[0m\n";
+		system("pause");
+		updateResident(resID);
+	}
+	else {
+		cout << "\x1B[31m\nQuery error\033[0m\n" << mysql_errno(connection) << endl;
+		exit(0);
+	}
+}
+
+//this function is called after a user select it from updateResident()
+//handle the update of resident room number
+void ResidentMgmntModule::updateResidentRoomNum(string resID){
+	
+	string resRoomNum;
+	string getResidentData = "SELECT r.resRoomNum "
+		"FROM residents r "
+		"WHERE r.resID = '" + resID + "'";
+	const char* q = getResidentData.c_str();
+	conState = mysql_query(connection, q);
+
+	if (!conState) {
+		res = mysql_store_result(connection);
+		row = mysql_fetch_row(res);
+		resRoomNum = row[0];
+	}
+	else {
+		cout << "\x1B[31m\nQuery error\033[0m\n" << mysql_errno(connection) << endl;
+		exit(0);
+	}
+
+	do {
+		cout << "\n\nCurrent resident room number : " << resRoomNum;
+		cout << "\n\x1B[94m\nPlease enter resident's room number as in this format Block-Floor-Room Number (A-1-7)\033[0m\n";
+		cout << "Enter resident's room number : ";
+		cin >> resRoomNum;
+
+		if (misc.isValidRoomNum(resRoomNum)) {
+
+			//check if the room is available
+			string checkRoom = "SELECT COUNT(*) FROM residents WHERE resRoomNum = '" + resRoomNum + "'";
+			const char* qn = checkRoom.c_str();
+			conState = mysql_query(connection, qn);
+
+			if (!conState) {
+				res = mysql_store_result(connection);
+				row = mysql_fetch_row(res);
+				int roomCount = atoi(row[0]);
+				mysql_free_result(res);
+
+				if (roomCount != 0) {
+					cout << "\n\x1B[33mRoom is not available\033[0m\n";
+					cout << "\x1B[33mPlease try again\033[0m\n";
+					resRoomNum.clear();
+				}
+				else {
+					break;
+				}
+			}
+			else {
+				cout << "\x1B[31m\nQuery error\033[0m\n" << mysql_errno(connection) << endl;
+				exit(0);
+			}
+			resRoomNum.clear();
+		}
+	} while (true);
+
+	string updateResidentRoomNum = "UPDATE residents "
+		"SET resRoomNum = '" + resRoomNum + "' "
+		"WHERE resID = '" + resID + "'";
+	const char* x = updateResidentRoomNum.c_str();
+	conState = mysql_query(connection, x);
+	
+	if (!conState) {
+		cout << "\n\x1B[32mResident room number successfully updated\033[0m\n";
+		cout << "\x1B[32mRedirecting you back to Resident List\033[0m\n";
+		system("pause");
+		updateResident(resID);
+	}
+	else {
+		cout << "\x1B[31m\nQuery error\033[0m\n" << mysql_errno(connection) << endl;
+		exit(0);
+	}
+}
+
+//this function is called after a user select it from updateResident()
+//handle the update of resident guardian name
+void ResidentMgmntModule::updateGuardianName(string resID){
+	
+	string resGuardName;
+	string getResidentData = "SELECT r.resGuardName "
+		"FROM residents r "
+		"WHERE r.resID = '" + resID + "'";
+	const char* q = getResidentData.c_str();
+	conState = mysql_query(connection, q);
+
+	if (!conState) {
+		res = mysql_store_result(connection);
+		row = mysql_fetch_row(res);
+		resGuardName = row[0];
+	}
+	else {
+		cout << "\x1B[31m\nQuery error\033[0m\n" << mysql_errno(connection) << endl;
+		exit(0);
+	}
+
+	do {
+		cout << "\n\nCurrent resident guardian name : " << resGuardName;
+		cout << "\n\x1B[94mPlease enter the new resident guardian name\033[0m\n";
+		cout << "Enter new resident guardian name : ";
+		cin.ignore();
+		getline(cin, resGuardName);
+
+		if (resGuardName.length() > 128) {
+			cout << "\n\x1B[33mResident guardian's name was too long\033[0m\n";
+			cout << "\x1B[33mPlease try again\033[0m\n";
+			resGuardName.clear();
+		}
+		else {
+			break;
+		}
+	} while (true);
+
+	string updateGuardianName = "UPDATE residents "
+		"SET resGuardName = '" + resGuardName + "' "
+		"WHERE resID = '" + resID + "'";
+	const char* x = updateGuardianName.c_str();
+	conState = mysql_query(connection, x);
+
+	if (!conState) {
+		cout << "\n\x1B[32mResident guardian name successfully updated\033[0m\n";
+		cout << "\x1B[32mRedirecting you back to Resident List\033[0m\n";
+		system("pause");
+		updateResident(resID);
+	}
+	else {
+		cout << "\x1B[31m\nQuery error\033[0m\n" << mysql_errno(connection) << endl;
+		exit(0);
+	}
+}
+
+//this function is called after a user select it from updateResident()
+//handle the update of resident guardian phone number
+void ResidentMgmntModule::updateGuardianContact(string resID){
+
+	string resGuardPhone;
+	string getResidentData = "SELECT r.resGuardPhone "
+		"FROM residents r "
+		"WHERE r.resID = '" + resID + "'";
+	const char* q = getResidentData.c_str();
+	conState = mysql_query(connection, q);
+
+	if (!conState) {
+		res = mysql_store_result(connection);
+		row = mysql_fetch_row(res);
+		resGuardPhone = row[0];
+	}
+	else {
+		cout << "\x1B[31m\nQuery error\033[0m\n" << mysql_errno(connection) << endl;
+		exit(0);
+	}
+
+	do {
+		cout << "\n\nCurrent resident guardian phone number : " << resGuardPhone;
+		cout << "\n\x1B[94mPlease enter the new resident guardian phone number\033[0m\n";
+		cout << "Enter new resident guardian phone number : ";
+		cin >> resGuardPhone;
+
+		if (resGuardPhone.length() > 13) {
+			cout << "\n\x1B[33mResident guardian's phone number was too long\033[0m\n";
+			cout << "\x1B[33mPlease try again\033[0m\n";
+			resGuardPhone.clear();
+		}
+		else if (!misc.isNumeric(resGuardPhone)) {
+			cout << "\n\x1B[33mResident guardian's phone number was invalid\033[0m\n";
+			cout << "\x1B[33mPlease try again\033[0m\n";
+			resGuardPhone.clear();
+		}
+		else {
+			break;
+		}
+	} while (true);
+
+	string updateGuardianPhone = "UPDATE residents "
+		"SET resGuardPhone = '" + resGuardPhone + "' "
+		"WHERE resID = '" + resID + "'";
+	const char* x = updateGuardianPhone.c_str();
+	conState = mysql_query(connection, x);
+
+	if (!conState) {
+		cout << "\n\x1B[32mResident guardian phone number successfully updated\033[0m\n";
+		cout << "\x1B[32mRedirecting you back to Resident List\033[0m\n";
+		system("pause");
+		updateResident(resID);
+	}
+	else {
+		cout << "\x1B[31m\nQuery error\033[0m\n" << mysql_errno(connection) << endl;
+		exit(0);
+	}
+}
+
+//this function is called after a user select it from residentListView()
+//this function gonna handle the removal of resident
+void ResidentMgmntModule::removeResident(string resID) {
+
+	//confrimation
+	do {
+
+		cout << "\n\x1B[94mAre you sure you want to remove this resident?\033[0m\n";
+		cout << "1 - Yes\n";
+		cout << "2 - No\n";
+		cout << "Enter your choice : ";
+
+		int option;
+		cin >> option;
+
+		if (cin.fail()) {
+			cin.clear();
+			cin.ignore();
+			cout << "\n\n\x1B[91mInvalid input! Please enter a number.\033[0m\n\n";
+			system("pause");
+			removeResident(resID);
+		}
+		else {
+			switch (option) {
+			case 1:
+				break;
+			case 2:
+				cout << "\nRedirecting you back to Resident List\n";
+				system("pause");
+				residentListView();
+				break;
+			}
+
+			string removeResident = "DELETE FROM residents "
+				"WHERE resID = '" + resID + "'";
+			const char* x = removeResident.c_str();
+			conState = mysql_query(connection, x);
+
+			if (!conState) {
+				cout << "\n\x1B[32mResident successfully removed\033[0m\n";
+				cout << "\x1B[32mRedirecting you back to Resident List\033[0m\n";
+				system("pause");
+				residentListView();
+			}
+			else {
+				cout << "\x1B[31m\nQuery error\033[0m\n" << mysql_errno(connection) << endl;
+				exit(0);
+			}
+		}
+	} while (true);
+}
