@@ -208,7 +208,7 @@ void ResidentMgmntModule::residentRegistration(){
 
 	//resident guardian phone instance
 	do  {
-		cout << "Enter user phone number : ";
+		cout << "Enter guardian phone number : ";
 		cin >> resGuardPhone;
 
 		if (resGuardPhone.length() > 13) {

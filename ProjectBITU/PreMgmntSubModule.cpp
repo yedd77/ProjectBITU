@@ -6,6 +6,7 @@
 #include "Auth.h"
 #include "Misc.h"
 #include "table.h"
+#include "Scheduler.h"
 
 using namespace std;
 
@@ -13,6 +14,7 @@ extern Artwork art;
 extern Auth auth;
 extern Misc misc;
 extern MedStrgModule medStrgModule;
+extern Scheduler scheduler;
 
 //this function displaying the prescription menu
 void PreMgmntSubModule::preMgmntMenu() {
@@ -265,6 +267,11 @@ void PreMgmntSubModule::addPrescription() {
 		if (misc.isNumeric(timePerDay)) {
 			break;
 		}
+		else if(stoi(timePerDay) < 0){
+			
+			cout << "\n\x1B[31mPrescription must be taken atleast once a day\033[0m\n";
+			system("pause");
+		}
 		else {
 			cout << "\n\x1B[31mInvalid input, please try again\033[0m\n";
 			system("pause");
@@ -310,6 +317,7 @@ void PreMgmntSubModule::addPrescription() {
 
 	if (!conState) {
 		cout << "\n\x1B[32mPrescription added successfully\033[0m\n";
+		scheduler.checkSchedule();
 		system("pause");
 		preMgmntMenu();
 	}

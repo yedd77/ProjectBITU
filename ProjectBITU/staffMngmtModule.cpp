@@ -12,7 +12,7 @@ using namespace std;
 extern Artwork art;	
 extern SuperAdmin admin;
 extern Auth auth;
-Misc misc;
+extern Misc misc;
 
 //function to display staff management module menu
 void StaffMngmtModule::staffMenu(){

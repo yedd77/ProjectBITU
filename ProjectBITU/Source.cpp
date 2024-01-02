@@ -10,6 +10,8 @@
 #include "Artwork.h"
 #include "Auth.h"
 #include "SuperAdmin.h"
+#include "Misc.h"
+#include "Scheduler.h"
 
 //debug
 #include "MedStrgModule.h"
@@ -27,6 +29,8 @@ MYSQL_RES* res;
 Artwork art;
 SuperAdmin admin;
 Auth auth;
+Misc misc;
+Scheduler scheduler;
 
 
 boolean connectionFunction() {
@@ -66,41 +70,23 @@ boolean connectionFunction() {
 }
 
 int main() {
-	
-	//debug mode
-	int mode;
-	cout << "1 - Normal\n";
-	cout << "2 - Debug\n";
-	cout << "Please select mode : ";
-	cin >> mode;
+	system("cls");
+	//NORMAL MODE
 
-	if (mode == 1) {
-		system("cls");
-		//NORMAL MODE
-		
-		//check if the connection unable to establish
-		if (!connectionFunction()) {
-			cout << "Program error, please try again\n\n";
-			exit(0);
-		}
-		if (!auth.firstTimeSetup()) {
-			cout << "Program error, please try again\n\n";
-			exit(0);
-		}
-		system("pause");
-		auth.login();
-		return 0;
+	//check if the connection unable to establish
+	if (!connectionFunction()) {
+		cout << "Program error, please try again\n\n";
+		exit(0);
 	}
-	else if (mode == 2) {
-		//debug mode
-		system("cls");
-		if (connectionFunction() == false) {
-			cout << "Program error, please try again\n\n";
-			exit(0);
-		}
-		auth.firstTimeSetup();
-		
-		//set function need to be debugged here
-		medStrgModule.nurseModuleMenu();
+	if (!auth.firstTimeSetup()) {
+		cout << "Program error, please try again\n\n";
+		exit(0);
 	}
+	
+	system("pause");
+	scheduler.checkSchedule();
+	system("pause");
+	auth.login();
+	
+	return 0;
 }

@@ -149,6 +149,7 @@
     <ClInclude Include="Misc.h" />
     <ClInclude Include="PreMgmntSubModule.h" />
     <ClInclude Include="ResidentMgmntModule.h" />
+    <ClInclude Include="Scheduler.h" />
     <ClInclude Include="staffMngmtModule.h" />
     <ClInclude Include="StorageMgmntSub.h" />
     <ClInclude Include="SuperAdmin.h" />

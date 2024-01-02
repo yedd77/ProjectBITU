@@ -122,6 +122,26 @@ public:
 		return userID;
 	}
 
+	//function to create schedule ID
+	string createScheduleID(string lastID, string prefix) {
+
+		//remove prefix, and turn it into int datatype
+		string lastNumberS = lastID.substr(3);
+		int number;
+		istringstream(lastNumberS) >> number;
+
+		//add value to 1
+		number++;
+
+		//combine prefix with number
+		ostringstream currentNum;
+		currentNum << prefix << setw(9) << setfill('0') << number;
+
+		string scheduleID = currentNum.str();
+
+		return scheduleID;
+	}
+
 	//function to change the role value into string
 	string getRoleString(int userRole) {
 
