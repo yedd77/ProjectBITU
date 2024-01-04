@@ -6,12 +6,16 @@
 #include "Misc.h"
 #include <string>
 #include "table.h"
+#include "config.h"
+#include "Verifier.h"
 
 using namespace std;
 extern Artwork art;
 extern SuperAdmin admin;
 extern Auth auth;
 extern Misc misc;
+extern config conf;
+extern Verifier verifier;
 
 //this function is called when admin select resident management module
 // automatically call residentMenu() function if the user is not admin
@@ -26,8 +30,9 @@ void ResidentMgmntModule::residentMenu(){
 
 	cout << "1 - Register New Resident\n";
 	cout << "2 - View Existing Resident\n";
-	cout << "3 - Go back to Main Module menu\n";
-	cout << "4 - Log out\n";
+	cout << "3 - Medication Schedule\n";
+	cout << "4 - Go back to Main Module menu\n";
+	cout << "5 - Log out\n";
 
 	cout << "\nEnter your choice : ";
 
@@ -54,11 +59,22 @@ void ResidentMgmntModule::residentMenu(){
 			residentListView();
 			break;
 		case 3:
-			cout << "\nRedirecting you back to Main Menu\n";
+			cout << "\nRedirecting you to Medication Schedule\n";
 			system("pause");
-			admin.superAdminMenu();
+			residentIncompleteSchedule();
 			break;
 		case 4:
+			if (verifier.verifyUserAuthorization((conf.getCurrentUserID()))) {
+				admin.superAdminMenu();
+			}
+			else {
+				cout << "\x1B[93m\nYou are not authorize to access this page\033[0m\n";
+				cout << "\x1B[93mRedirecting you to previous page\033[0m\n\n";
+				system("pause");
+				residentMenu();
+			}
+			break;
+		case 5:
 			cout << "\nRedirectin you to log out page\n";
 			system("pause");
 			if (!auth.logout()) {
@@ -837,4 +853,373 @@ void ResidentMgmntModule::removeResident(string resID) {
 			}
 		}
 	} while (true);
+}
+
+//this function is called after a user select it from residentMenu()
+//get userID and using it to find the resident's schedule that assigned to them
+//if the user have incomplete schedule, it will show the incomplete schedule
+//if user has completed all the schedule, it will show the completed schedule
+void ResidentMgmntModule::residentIncompleteSchedule(){
+	
+	system("cls");
+	art.logoArt();
+	art.directoryArt("Main Module Menu/ Resident Management Module/Resident Management Menu/Resident Schedule - Incomplete Schedule");
+	//define query to find the assigned resident to the current logged in user
+	string selectSchedule = "SELECT "
+		"schedules.scheduleID, "
+		"residents.resRoomNum, "
+		"medicines.medsName, "
+		"prescriptions.quantity, "
+		"schedules.timeGiven, "
+		"CASE "
+		"WHEN schedules.isGiven = 1 THEN 'Given' "
+		"WHEN schedules.isGiven = 0 THEN 'Not Given' "
+		"END AS isGivenStatus "
+		"FROM schedules "
+		"JOIN prescriptions ON schedules.prescriptID = prescriptions.prescriptID "
+		"JOIN residents ON prescriptions.resID = residents.resID "
+		"JOIN users ON residents.staffID = users.staffID "
+		"JOIN medicines ON prescriptions.medsID = medicines.medsID "
+		"WHERE users.staffID = '" + conf.getCurrentUserID() + "' "
+		"AND schedules.date = CURRENT_DATE "
+		"AND schedules.isGiven = 0 "
+		"ORDER BY schedules.timeGiven ASC ";
+	const char* ss = selectSchedule.c_str();
+	conState = mysql_query(connection, ss);
+	
+	if (!conState) {
+		res = mysql_store_result(connection);
+		if (mysql_num_rows(res) < 0) {
+			cout << "\n\x1B[33mYou have no incoming schedule for today\033[0m\n";
+			cout << "\x1B[33mRedirecting you to completed today schedule\033[0m\n";
+			system("pause");   
+			residentCompleteSchedule();
+		}
+
+		//create table
+		clitable::Table scheduleTable;
+		clitable::Column column[6] = {
+			clitable::Column("Schedule ID",  clitable::Column::CENTER_ALIGN, clitable::Column::CENTER_ALIGN, 1, 13, clitable::Column::NON_RESIZABLE),
+			clitable::Column("Room  Number",  clitable::Column::CENTER_ALIGN, clitable::Column::CENTER_ALIGN, 1, 6, clitable::Column::NON_RESIZABLE),
+			clitable::Column("Medicine Name",  clitable::Column::CENTER_ALIGN, clitable::Column::LEFT_ALIGN, 1, 45, clitable::Column::NON_RESIZABLE),
+			clitable::Column("Quantity",  clitable::Column::CENTER_ALIGN, clitable::Column::CENTER_ALIGN, 1, 8, clitable::Column::NON_RESIZABLE),
+			clitable::Column("Time Given",  clitable::Column::CENTER_ALIGN, clitable::Column::CENTER_ALIGN, 1, 10, clitable::Column::NON_RESIZABLE),
+			clitable::Column("Status",  clitable::Column::CENTER_ALIGN, clitable::Column::CENTER_ALIGN, 1, 10, clitable::Column::NON_RESIZABLE)
+		};
+
+		for(int i=0; i<6; i++){scheduleTable.addColumn(column[i]);}
+
+		while (row = mysql_fetch_row(res)) {
+			vector<string> rowTable;
+			for (int i = 0; i < 6; i++) { rowTable.push_back(row[i] ? row[i] : "NULL"); }
+			string* scheduleData = &rowTable[0];
+			scheduleTable.addRow(scheduleData);
+		}
+
+		cout << scheduleTable.draw() << endl;
+	}
+	else {
+		cout << "\x1B[31m\nQuery error\033[0m\n" << mysql_errno(connection) << endl;
+		exit(0);
+	}
+	
+	string scheduleID;
+	do {
+
+		cout << "\x1B[94mPlease enter the scheduleID of the prescription you have gave\033[0m\n\n";
+		cout << "Enter schedule ID : ";
+		cin >> scheduleID;
+
+		//check if the scheduleID exist in the database
+		string checkSchedule = "SELECT "
+			"COUNT(*) AS prescriptionCount "
+			"FROM "
+			"schedules "
+			"JOIN "
+			"prescriptions ON schedules.prescriptID = prescriptions.prescriptID "
+			"JOIN "
+			"residents ON prescriptions.resID = residents.resID "
+			"JOIN "
+			"users ON residents.staffID = users.staffID "
+			"JOIN "
+			"medicines ON prescriptions.medsID = medicines.medsID "
+			"WHERE "
+			"users.staffID = '" + conf.getCurrentUserID() + "' "
+			"AND schedules.date = CURRENT_DATE "
+			"AND schedules.isGiven = 0 "
+			"AND schedules.scheduleID = '" + scheduleID + "'";
+		const char* cs = checkSchedule.c_str();
+		conState = mysql_query(connection, cs);
+
+		res = mysql_store_result(connection);
+		row = mysql_fetch_row(res);
+		int scheduleCount = atoi(row[0]);
+		mysql_free_result(res);
+
+		if (scheduleCount != 0) {
+			cout << "\n\x1B[32mSchedule Selected\033[0m\n\n";
+			system("pause");
+			break;
+		}
+		else {
+			cout << "\n\x1B[33mSchedule ID is invalid\033[0m\n";
+			cout << "\x1B[33mPlease try again\033[0m\n";
+			scheduleID.clear();
+		}
+		
+	} while (true);
+
+	system("cls");
+	art.logoArt();
+	art.directoryArt("Main Module Menu/ Resident Management Module/Resident Management Menu/Resident Schedule - Record Schedule");
+
+	string selectIndividualSchedule = "SELECT "
+		"schedules.scheduleID, "
+		"residents.resRoomNum, "
+		"residents.resName, "
+		"medicines.medsName, "
+		"prescriptions.quantity, "
+		"schedules.timeGiven "
+		"FROM schedules "
+		"JOIN prescriptions ON schedules.prescriptID = prescriptions.prescriptID "
+		"JOIN residents ON prescriptions.resID = residents.resID "
+		"JOIN users ON residents.staffID = users.staffID "
+		"JOIN medicines ON prescriptions.medsID = medicines.medsID "
+		"WHERE users.staffID = '" + conf.getCurrentUserID() + "' "
+		"AND schedules.date = CURRENT_DATE "
+		"AND schedules.scheduleID = '" + scheduleID + "'";
+	const char* sis = selectIndividualSchedule.c_str();
+	conState = mysql_query(connection, sis);
+
+	res = mysql_store_result(connection);
+	clitable::Table scheduleTable;
+	clitable::Column column[6] = {
+			clitable::Column("Schedule ID",  clitable::Column::CENTER_ALIGN, clitable::Column::CENTER_ALIGN, 1, 13, clitable::Column::NON_RESIZABLE),
+			clitable::Column("Room  Number",  clitable::Column::CENTER_ALIGN, clitable::Column::CENTER_ALIGN, 1, 6, clitable::Column::NON_RESIZABLE),
+			clitable::Column("Resident Name",  clitable::Column::CENTER_ALIGN, clitable::Column::LEFT_ALIGN, 1, 30, clitable::Column::NON_RESIZABLE),
+			clitable::Column("Medicine Name",  clitable::Column::CENTER_ALIGN, clitable::Column::LEFT_ALIGN, 1, 30, clitable::Column::NON_RESIZABLE),
+			clitable::Column("Quantity",  clitable::Column::CENTER_ALIGN, clitable::Column::CENTER_ALIGN, 1, 8, clitable::Column::NON_RESIZABLE),
+			clitable::Column("Time Given",  clitable::Column::CENTER_ALIGN, clitable::Column::CENTER_ALIGN, 1, 10, clitable::Column::NON_RESIZABLE)
+	};
+
+	for(int i=0; i<6; i++){scheduleTable.addColumn(column[i]);}
+
+	while (row = mysql_fetch_row(res)) {
+		vector<string> rowTable;
+		for (int i = 0; i < 6; i++) { rowTable.push_back(row[i] ? row[i] : "NULL"); }
+		string* scheduleData = &rowTable[0];
+		scheduleTable.addRow(scheduleData);
+	}
+
+	cout << scheduleTable.draw() << endl;
+
+	do {
+		char confirm;
+		cout << "\n\x1B[94mYou are about to record this schedule as given\033[0m\n";
+		cout << "\n\x1B[94mHave you gave the medicines to the resident?\033[0m\n";
+		cout << "Enter Y to confirm or N to cancel : ";
+		cin >> confirm;
+
+		switch (confirm) {
+		case 'Y':
+		case 'y':
+			updateSchedule(scheduleID);
+			break;
+		case 'N':
+		case 'n':
+			cout << "\nRedirecting you back to Resident Menu\n";
+			system("pause");
+			residentMenu();
+			break;
+		default:
+			cout << "\n\x1B[33mInvalid input\033[0m\n";
+			cout << "\x1B[33mPlease try again\033[0m\n";
+			system("pause");
+			break;
+		}
+
+	} while (true);
+	system("pause");
+}
+
+//this function is called if the user has completed all the schedule for the day
+//called from residentIncompleteSchedule()
+//this function gonna display all the schedule that the user has completed
+void ResidentMgmntModule::residentCompleteSchedule(){
+
+	system("cls");
+	art.logoArt();
+	art.directoryArt("Main Module Menu/ Resident Management Module/Resident Management Menu/Resident Schedule - Complete Schedule");
+
+	string selectSchedule = "SELECT "
+		"schedules.scheduleID, "
+		"residents.resRoomNum, "
+		"medicines.medsName, "
+		"prescriptions.quantity, "
+		"schedules.timeGiven, "
+		"CASE "
+		"WHEN schedules.isGiven = 1 THEN 'Given' "
+		"WHEN schedules.isGiven = 0 THEN 'Not Given' "
+		"END AS isGivenStatus "
+		"FROM schedules "
+		"JOIN prescriptions ON schedules.prescriptID = prescriptions.prescriptID "
+		"JOIN residents ON prescriptions.resID = residents.resID "
+		"JOIN users ON residents.staffID = users.staffID "
+		"JOIN medicines ON prescriptions.medsID = medicines.medsID "
+		"WHERE users.staffID = '" + conf.getCurrentUserID() + "' "
+		"AND schedules.date = CURRENT_DATE "
+		"AND schedules.isGiven = 1 "
+		"ORDER BY schedules.timeGiven ASC ";
+	const char* ss = selectSchedule.c_str();
+	conState = mysql_query(connection, ss);
+
+	if (!conState) {
+		res = mysql_store_result(connection);
+
+		//create table
+		clitable::Table scheduleTable;
+		clitable::Column column[6] = {
+			clitable::Column("Schedule ID",  clitable::Column::CENTER_ALIGN, clitable::Column::CENTER_ALIGN, 1, 13, clitable::Column::NON_RESIZABLE),
+			clitable::Column("Room  Number",  clitable::Column::CENTER_ALIGN, clitable::Column::CENTER_ALIGN, 1, 6, clitable::Column::NON_RESIZABLE),
+			clitable::Column("Medicine Name",  clitable::Column::CENTER_ALIGN, clitable::Column::LEFT_ALIGN, 1, 45, clitable::Column::NON_RESIZABLE),
+			clitable::Column("Quantity",  clitable::Column::CENTER_ALIGN, clitable::Column::CENTER_ALIGN, 1, 8, clitable::Column::NON_RESIZABLE),
+			clitable::Column("Time Given",  clitable::Column::CENTER_ALIGN, clitable::Column::CENTER_ALIGN, 1, 10, clitable::Column::NON_RESIZABLE),
+			clitable::Column("Status",  clitable::Column::CENTER_ALIGN, clitable::Column::CENTER_ALIGN, 1, 10, clitable::Column::NON_RESIZABLE)
+		};
+
+		for (int i = 0; i < 6; i++) { scheduleTable.addColumn(column[i]); }
+
+		while (row = mysql_fetch_row(res)) {
+			vector<string> rowTable;
+			for (int i = 0; i < 6; i++) { rowTable.push_back(row[i] ? row[i] : "NULL"); }
+			string* scheduleData = &rowTable[0];
+			scheduleTable.addRow(scheduleData);
+		}
+
+		cout << scheduleTable.draw() << endl;
+	}
+
+	do {
+		cout << "\n\x1B[94mPlease select your next action\033[0m\n\n";
+		cout << "1 - Go back to Resident Management Menu\n";
+		cout << "Enter your choice : ";
+
+		int option;
+		cin >> option;
+
+		if (cin.fail()) {
+			cin.clear();
+			cin.ignore();
+			cout << "\n\n\x1B[91mInvalid input! Please enter a number.\033[0m\n\n";
+			system("pause");
+			residentCompleteSchedule();
+		}
+		else {
+			switch (option) {
+			case 1:
+				cout << "\nRedirecting you back to Resident Management Menu\n";
+				system("pause");
+				residentMenu();
+				break;
+			}
+		}
+	} while (true);
+}
+
+//this function is called after user confirm to record the schedule as given in residentIncompleteSchedule()
+//this function gonna update the schedule status to given
+void ResidentMgmntModule::updateSchedule(string sceheduleID){
+
+	string updateSchedule = "UPDATE schedules "
+		"SET isGiven = 1 "
+		"WHERE scheduleID = '" + sceheduleID + "'";
+
+	const char* us = updateSchedule.c_str();
+	conState = mysql_query(connection, us);
+
+	if (!conState) {
+		updateMedsStock(sceheduleID);
+	}
+	else {
+		cout << "\x1B[31m\nQuery error\033[0m\n" << mysql_errno(connection) << endl;
+	}
+}
+
+//this function is revoked from updateMedsstock() where its called if the batch of the needed batch is not enough or none
+//this function gonna rollback the update of schedule status
+void ResidentMgmntModule::updateScheduleRollback(string sceheduleID){
+	string updateSchedule = "UPDATE schedules "
+		"SET isGiven = 0 "
+		"WHERE scheduleID = '" + sceheduleID + "'";
+
+	const char* us = updateSchedule.c_str();
+	conState = mysql_query(connection, us);
+
+	if (conState) {
+		cout << "\x1B[31m\nQuery error\033[0m\n" << mysql_errno(connection) << endl;
+	}
+}
+
+//this function is called in updateSchedule()
+//this function gonna update the medicine stock after the schedule is given
+//this function going to get earlist expiry date first and select the quantity of prescribed medicine
+//since there's many batches, this function gonna update the batch that have the earliest expiry date
+void ResidentMgmntModule::updateMedsStock(string scheduleID){
+
+	string oldQty, batchID, preQty;
+	//select how the medicine quantity that the resident need to take,
+	//select the batch ID that the batches have the earliest expiry date and need to be updated
+	string selection = "SELECT "
+		"prescriptions.quantity AS prescriptionQuantity, "
+		"batches.batchQuantity AS currentStock, "
+		"batches.batchID AS currentBatchID "
+		"FROM batches "
+		"JOIN medicines ON batches.medsID = medicines.medsID "
+		"JOIN prescriptions ON medicines.medsID = prescriptions.medsID "
+		"JOIN schedules ON prescriptions.prescriptID = schedules.prescriptID "
+		"WHERE schedules.scheduleID = '" +scheduleID+ "' "
+		"AND batchExpiry > CURDATE()"
+		"ORDER BY batchExpiry ASC "
+		"LIMIT 1";
+	const char* s = selection.c_str();
+	conState = mysql_query(connection, s);
+
+	if (!conState) {
+		res = mysql_store_result(connection);
+		if (mysql_num_rows(res) == 0) {
+			cout << "\n\x1B[33mThere's no more stock for this medicine\033[0m\n";
+			cout << "\x1B[33mPlease contact the pharmacy to restock\033[0m\n";
+			cout << "Redirecting you back to Resident Menu\n";
+			updateScheduleRollback(scheduleID);
+			system("pause");
+			residentMenu();
+		}
+		row = mysql_fetch_row(res);
+		preQty = row[0];
+		oldQty = row[1];
+		batchID = row[2];
+	}
+	else{
+		cout << "\x1B[31m\nQuery error\033[0m\n" << mysql_errno(connection) << endl;
+	}
+
+	//calculate new batch quantity after the meds is given
+	string newQty = to_string(stoi(oldQty) - stoi(preQty));
+
+	//update new batch quantity
+	string updateBatches = "UPDATE batches "
+		"SET batchQuantity = '" + newQty + "' "
+		"WHERE batchID = '" + batchID + "'";
+	const char* ub = updateBatches.c_str();
+	conState = mysql_query(connection, ub);
+	if (!conState) {
+		cout << "\n\x1B[32mSchedule successfully recorded as given\033[0m\n";
+		cout << "\x1B[32mRedirecting you back to Resident Schedule - Incomplete Schedule\033[0m\n";
+		system("pause");
+		residentIncompleteSchedule();
+	}
+	else {
+		cout << "\x1B[31m\nQuery error\033[0m\n" << mysql_errno(connection) << endl;
+	}
+
 }

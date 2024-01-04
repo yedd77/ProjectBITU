@@ -48,6 +48,9 @@
     <ClCompile Include="PreMgmntSubModule.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="dailyUpdater.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="table.h">
@@ -81,6 +84,18 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="PreMgmntSubModule.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Scheduler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="config.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Verifier.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dailyUpdater.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

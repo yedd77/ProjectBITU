@@ -12,6 +12,7 @@
 #include "SuperAdmin.h"
 #include "Misc.h"
 #include "Scheduler.h"
+#include "dailyUpdater.h"
 
 //debug
 #include "MedStrgModule.h"
@@ -31,6 +32,7 @@ SuperAdmin admin;
 Auth auth;
 Misc misc;
 Scheduler scheduler;
+DailyUpdater dailyUpdater;
 
 
 boolean connectionFunction() {
@@ -82,9 +84,8 @@ int main() {
 		cout << "Program error, please try again\n\n";
 		exit(0);
 	}
-	
-	system("pause");
 	scheduler.checkSchedule();
+	dailyUpdater.controller();
 	system("pause");
 	auth.login();
 	

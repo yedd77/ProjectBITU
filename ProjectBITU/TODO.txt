@@ -1,7 +1,7 @@
 TODO
 
-[] add a previous page option if the user is super admin and hide it for other users
 [] add search module different with search current function
-[] after add a meds, the system will ask if they want to add the stock for it or not
 [] if no row in table, shows no data
 [] if no data in table, shows no data [prescription] local Var not init 482 PREMGNTSUB
+[] add case where resident just need to take the meds if needed, add status missed
+[] add updater to set and remove past data

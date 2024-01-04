@@ -6,6 +6,10 @@
 #include <conio.h>
 #include <algorithm>
 #include "SuperAdmin.h"
+#include "config.h"
+#include "MedStrgModule.h"
+#include "ResidentMgmntModule.h"
+#include "Verifier.h"
 
 using namespace std;
 
@@ -15,6 +19,10 @@ extern MYSQL_ROW row;
 extern MYSQL_RES* res;
 extern Artwork art;
 extern SuperAdmin admin;
+MedStrgModule medStrg;
+ResidentMgmntModule resMgmnt;
+config conf;
+Verifier verifier;
 
 //function to initialize the system if the system hasnt been initialize before
 bool Auth::firstTimeSetup() {
@@ -43,8 +51,7 @@ bool Auth::firstTimeSetup() {
 			art.loadingArt();
 
 			//Creating row in user table as superadmin with default password
-			//TODO 1: change pass and userIC
-			string query = "INSERT INTO users(staffID,staffIC,staffName,staffPass,staffPhone,staffRole,isPassChanged) VALUES ('STF0001' , '123' , 'Super Admin' , '123' , '000000000000' , 1 , 0 )";
+			string query = "INSERT INTO users(staffID,staffIC,staffName,staffPass,staffPhone,staffRole,isPassChanged) VALUES ('STF0001' , '000000000000' , 'Super Admin' , 'MyPassword@777' , '000000000000' , 1 , 0 )";
 			const char* queryC = query.c_str();
 			conState = mysql_query(connection, queryC);
 
@@ -116,7 +123,7 @@ void  Auth::login() {
 					printf("\x1B[32m\nYou've successfully login\033[0m\n");
 
 					row = mysql_fetch_row(res);
-
+					conf.setCurrentUserID(row[0]);
 					int loginRoleint = stoi(row[5]);
 					string loginRole;
 					switch (loginRoleint) {
@@ -272,15 +279,15 @@ void Auth::seperateUserMenu(string* userData) {
 	switch (userRole) {
 	case 1:
 		admin.superAdminMenu();
-		break;
 		system("pause");
+		break;
 	case 2:
-		//TODO 2 : moduleNurse();
-		//userRole = Nurse
+		medStrg.nurseModuleMenu();
+		system("pause");
 		break;
 	case 3:
-		//TODO 3 : moduleCaretaker();
-		//userRole = Caretaker
+		resMgmnt.residentMenu();
+		system("pause");
 		break;
 	default:
 		cout << "\x1B[93m\nYour role has not been assigned by admin yet, please contact admininstrator\033[0m\n";

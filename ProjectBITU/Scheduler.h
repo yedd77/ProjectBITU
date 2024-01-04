@@ -140,25 +140,24 @@ public :
 
 		switch (frequency) {
 		case 1:
-			time.push_back("0800");
+			time.push_back("080000");
 			break;
 		case 2:
-			time.push_back("0800");
-			time.push_back("2000");
+			time.push_back("080000");
+			time.push_back("200000");
 			break;
 		case 3:
-			time.push_back("0600");
-			time.push_back("1400");
-			time.push_back("2200");
+			time.push_back("060000");
+			time.push_back("140000");
+			time.push_back("220000");
 			break;
 		case 4:
-			time.push_back("0600");
-			time.push_back("1200");
-			time.push_back("1800");
-			time.push_back("0000");
+			time.push_back("060000");
+			time.push_back("120000");
+			time.push_back("180000");
+			time.push_back("230000");
 			break;
 		}
-
 		return time;
 	}
 

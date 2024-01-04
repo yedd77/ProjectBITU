@@ -592,7 +592,6 @@ void MedMgmntSub::medsUpdateDesc(string* medsData) {
 	medsMgmntView();
 }
 
-//TODO
 void MedMgmntSub::medsRemove(string* medsData) {
 
 	system("cls");
@@ -759,7 +758,9 @@ void MedMgmntSub::batchMgmntAdd(string* medsData) {
 
 	//batchID instance
 	//retrieve last record on DB
-	string queryGetLast = "SELECT * FROM batches  WHERE medsID = '" + medsData[0] + " 'ORDER BY batchID DESC LIMIT 1";
+	string queryGetLast = "SELECT * FROM batches ORDER BY batchID DESC LIMIT 1";
+	cout << queryGetLast << endl;
+	
 
 	const char* q = queryGetLast.c_str();
 	conState = mysql_query(connection, q);
@@ -772,10 +773,11 @@ void MedMgmntSub::batchMgmntAdd(string* medsData) {
 		cout << "\x1B[31m\nQuery error\033[0m\n" << mysql_errno(connection) << endl;
 		exit(0);
 	}
-
+	
 	//medsID instance
 	medsID = medsData[0];
-	//convert SQL array to normal string and pass the value to createID
+
+	//batch ID instance
 	string passedID;
 	if (row) {
 		passedID = row[0];
@@ -800,7 +802,6 @@ void MedMgmntSub::batchMgmntAdd(string* medsData) {
 		}
 		else {
 			batchQty = qty;
-
 			break;
 		}
 	} while (true);
@@ -814,6 +815,7 @@ void MedMgmntSub::batchMgmntAdd(string* medsData) {
 		if (misc.isValidDateFormat(batchExpDate)) {
 			break;
 		}
+		batchExpDate.clear();
 	} while (true);
 
 	string insertQuery = "INSERT INTO batches "

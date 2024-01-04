@@ -17,5 +17,10 @@ public:
 	void updateGuardianName(string resID);
 	void updateGuardianContact(string resID);
 	void removeResident(string resID);
+	void residentIncompleteSchedule();
+	void residentCompleteSchedule();
+	void updateSchedule(string sceheduleID); //background process
+	void updateScheduleRollback(string sceheduleID); //background process
+	void updateMedsStock(string scheduleID); //background process
 };
 #endif // !RESIDENTMGMNTMODULE_H

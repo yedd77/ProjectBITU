@@ -5,14 +5,21 @@
 #include "MedMgmntSub.h"
 #include "StorageMgmntSub.h"
 #include "PreMgmntSubModule.h"
+#include "config.h"
+#include "Verifier.h"
+#include "SuperAdmin.h"
 
 using namespace std;
 
 extern Auth auth;
 extern Artwork art;
+extern Verifier verifier;
+extern SuperAdmin admin;
+extern config conf;
 MedMgmntSub medMgmntSub;
 StorageMgmntSub storageMgmntSub;
 PreMgmntSubModule preMgmntSub;
+
 
 //this function shows the menu for the medicine storage management module (MSMM)
 //the menu include sub-module under this module such as medicine management, 
@@ -28,7 +35,8 @@ void MedStrgModule::nurseModuleMenu(){
 	cout << "1 - Medicines Management sub-module\n";
 	cout << "2 - Storage Management sub-module\n";
 	cout << "3 - Prescription Management sub-module\n";
-	cout << "4 - Log out\n\n";
+	cout << "4 - Return to admin menu\n";
+	cout << "5 - Log out\n\n";
 
 	cout << "Please enter your choice : ";
 
@@ -54,6 +62,17 @@ void MedStrgModule::nurseModuleMenu(){
 			preMgmntSub.preMgmntMenu();
 			break;
 		case 4:
+			if (verifier.verifyUserAuthorization((conf.getCurrentUserID()))) {
+				admin.superAdminMenu();
+			}
+			else {
+				cout << "\x1B[93m\nYou are not authorize to access this page\033[0m\n";
+				cout << "\x1B[93mRedirecting you to previous page\033[0m\n\n";
+				system("pause");
+				nurseModuleMenu();	
+			}
+			break;
+		case 5:
 			system("pause");
 			if (!auth.logout()) {
 				nurseModuleMenu();
