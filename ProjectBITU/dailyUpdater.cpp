@@ -76,7 +76,7 @@ void DailyUpdater::ScheduleUpdater(){
 
 				fieldCount++;
 			}
-			message.push_back(fieldCount + " medication(s) schedule has been adjusted");
+			message.push_back(to_string(fieldCount) + " medication(s) schedule has been adjusted");
 		}
 		else {
 			message.push_back("No update for medication schedule");

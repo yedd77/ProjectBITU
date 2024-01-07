@@ -129,7 +129,7 @@ public :
 				}
 			}
 		}
-		cout << "\n\x1B[32mSchedule has been updated successfully\033[0m\n";
+		cout << "\x1B[32mSchedule has been updated successfully\033[0m\n";
 	}
 	
 	//this function take frequency as parameter and return

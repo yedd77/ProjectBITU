@@ -409,7 +409,7 @@ void PreMgmntSubModule::removePrescription(string resID, string preID){
 		}
 		else {
 			cout << "\n\033[1;31mInvalid input, please try again\033[0m\n";
-			system("pause");
+			system("pause");	
 		}
 	} while (true);
 

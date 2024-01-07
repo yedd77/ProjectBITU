@@ -1070,6 +1070,7 @@ void ResidentMgmntModule::residentCompleteSchedule(){
 		"AND schedules.date = CURRENT_DATE "
 		"AND schedules.isGiven = 1 "
 		"ORDER BY schedules.timeGiven ASC ";
+
 	const char* ss = selectSchedule.c_str();
 	conState = mysql_query(connection, ss);
 
