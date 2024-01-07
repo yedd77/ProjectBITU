@@ -129,7 +129,7 @@ namespace clitable {
                 int k = columns.at(i).getSize();
                 // Suppress warning for arithmetic overflow
                 // NOLINTNEXTLINE(lint-arithmetic-overflow)
-                for (size_t j = 0; j < (k + columns.at(i).getPadding() * 2); j++) p += dash;
+                for (size_t j = 0; j < (k + static_cast<unsigned long long>(columns.at(i).getPadding()) * 2); j++) p += dash;
                 p += '+';
             }
             p += "\n";

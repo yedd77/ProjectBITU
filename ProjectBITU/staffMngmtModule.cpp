@@ -14,7 +14,8 @@ extern SuperAdmin admin;
 extern Auth auth;
 extern Misc misc;
 
-//function to display staff management module menu
+//this function is called from superadmin menu superadmin.cpp within superAdminMenu() function
+//this function is used to display staff management module menu
 void StaffMngmtModule::staffMenu(){
 
 	system("cls");
@@ -23,10 +24,13 @@ void StaffMngmtModule::staffMenu(){
 
 	cout << "\x1B[94mPlease select your next action\033[0m\n\n";
 
-	cout << "1 - Register new staff\n";
-	cout << "2 - View existing staff\n";
-	cout << "3 - Go back to Main Module Menu\n";
-	cout << "4 - Log out\n";
+	cout << "1 - Register new staff\n"; 
+	cout << "2 - Update existing staff\n";
+	cout << "3 - Remove existing staff\n";
+	cout << "4 - View staff list\n";
+	cout << "5 - Search existing staff\n"; //TODO
+	cout << "6 - Go back to Main Module Menu\n"; 
+	cout << "7 - Log out\n";
 
 	cout << "\nEnter your choice : ";
 
@@ -40,29 +44,54 @@ void StaffMngmtModule::staffMenu(){
 		system("pause");
 		staffMenu();
 	} else {
-		switch (option) {
-		case 1:
-			cout << "\nRedirecting you to Staff Registration\n";
+
+		if (option == 1) {
+			cout << "\nRedirecting you to register new staff page\n";
 			system("pause");
 			staffRegistration();
-			break;
-		case 2:
+		}
+		else if (option == 2) {
+			cout << "\nRedirecting you to modify staff page\n";
+			system("pause");
+			staffListView();
+			string* userData = staffSearch();
+			system("pause");
+			staffUpdate(userData);
+		}
+		else if (option == 3) {
+			cout << "\nRedirecting you to remove staff record page\n";
+			system("pause");
+			staffListView();
+			string* userData = staffSearch();
+			system("pause");
+			staffRemove(userData);
+		}
+		else if (option == 4) {
 			cout << "\nRedirecting you to Staff List\n";
 			system("pause");
 			staffListView();
-			break;
-		case 3:
-			cout << "\nRedirecting you back to Main Menu\n";
+			string* userData = staffSearch();
+			staffNextAction(userData);
+		}
+		else if (option == 5) {
+			staffGeneralSearch();
+		}
+		else if (option == 6) {
+			cout << "\nRedirecting you to Main Module Menu\n";
 			system("pause");
 			admin.superAdminMenu();
-			break;
-		case 4:
-			cout << "\nRedirectin you to log out page\n";
+		}
+		else if (option == 7) {
 			system("pause");
 			if (!auth.logout()) {
 				staffMenu();
 			}
-			break;
+		}
+		else {
+			cout << "\n\x1B[31mInvalid input, please try again\033[0m\n";
+			system("pause");
+			staffMenu();
+			option = 0;
 		}
 	}
 }
@@ -231,7 +260,7 @@ void StaffMngmtModule::staffListView(){
 
 	system("cls");
 	art.logoArt();
-	art.directoryArt("Main Module Menu/Staff Management Module/View User");
+	art.directoryArt("Main Module Menu/Staff Management Module/Select User");
 
 	//initialize query and table
 	string query = "SELECT * FROM users";
@@ -285,44 +314,6 @@ void StaffMngmtModule::staffListView(){
 		}
 		cout << table.draw() << endl;
 		mysql_free_result(res);
-
-		bool continueLoop = true;
-
-		do {
-			int option = 0;
-			cout << "\x1B[94mPlease enter your next action\033[0m\n\n";
-			cout << "1 - Edit or remove user\n";
-			cout << "2 - Previous page\n\n";
-			cout << "Enter your choice : ";
-
-
-			if (cin >> option) {
-				switch (option) {
-				case 1:
-					continueLoop = false;
-					option = 0;
-					staffSearch();
-					break;
-				case 2:
-					cout << "Redirecting you to previous page\n";
-					continueLoop = false;
-					option = 0;
-					system("pause");
-					staffMenu();
-					break;
-				}
-			}
-			else {
-				continueLoop = true;
-				option = 0;
-				cout << "\n\x1B[31mInvalid input\033[0m\n";
-				cout << "\x1B[31mPlease try again\033[0m\n\n";
-				cin.clear();
-				cin.ignore();
-			}
-
-
-		} while (continueLoop);
 	}
 	else {
 		cout << "\x1B[31mQuery error\033[0m\n" << mysql_errno(connection) << endl;
@@ -331,7 +322,7 @@ void StaffMngmtModule::staffListView(){
 }
 
 //function to search user and display menu to edit or remove user
-void StaffMngmtModule::staffSearch(){
+string* StaffMngmtModule::staffSearch(){
 
 	string userID;
 	cin.clear();
@@ -344,7 +335,8 @@ void StaffMngmtModule::staffSearch(){
 		cin.ignore(INT_MAX, '\n');
 
 		//define sql statement and connection state
-		string query = "SELECT * FROM users WHERE staffID ='" + userID + "'";
+		string query = "SELECT staffID, staffIC, staffName, staffPhone, staffRole FROM users "
+			"WHERE staffID ='" + userID + "'";
 		const char* cu = query.c_str();
 		conState = mysql_query(connection, cu);
 
@@ -358,6 +350,7 @@ void StaffMngmtModule::staffSearch(){
 				cout << "\n\x1B[31mUser doesn't exist. Please try again\033[0m\n";
 				system("pause");
 				staffListView();
+				return {};
 			}
 		}
 		else {
@@ -368,64 +361,13 @@ void StaffMngmtModule::staffSearch(){
 	} while (true);
 
 	row = mysql_fetch_row(res);
-	string userData[5];
-	boolean continueLoop = true;
-	int option;
-	int userDataIndex = 0;
+	string* userData = new string[5];
 
-	for (int i = 0; i < 7; i++) {
-		if (row[i] != nullptr) {
-			if (i == 3 || i == 6) {
-				continue;
-			}
-			else {
-				userData[userDataIndex] = row[i];
-				userDataIndex++;
-			}
-		}
-		else {
-			userData[userDataIndex] = "NULL";
-			userDataIndex++;
-		}
+	for (int i = 0; i < 5; i++) {
+		userData[i] = row[i];
 	}
-
-	do {
-		cout << "\x1B[94mPlease select your next option\033[0m\n\n";
-
-		cout << "1 - Edit user's information\n";
-		cout << "2 - Remove this user\n";
-		cout << "3 - Go back to previous page\n";
-		cout << "Enter your option : ";
-		cin >> option;
-
-		if (cin.fail()) {
-			cin.clear();
-			cin.ignore(INT_MAX, '\n');
-			cout << "\n\x1B[31mInvalid input\033[0m\n";
-			cout << "\x1B[31mPlease try again\033[0m\n\n";
-			option = 0;
-			continue;
-		}
-
-		switch (option) {
-		case 1:
-			//edit user
-			continueLoop = false;
-			system("pause");
-			staffUpdate(userData);
-			break;
-		case 2:
-			//remove user
-			continueLoop = false;
-			system("pause");
-			staffRemove(userData);
-			break;
-		case 3:
-			system("pause");
-			staffListView();
-			break;
-		}
-	} while (continueLoop);
+	
+	return userData;
 }
 
 //function to display properties to update
@@ -469,8 +411,7 @@ void StaffMngmtModule::staffUpdate(string* userData){
 		cout << "1 - Staff IC\n";
 		cout << "2 - Staff Name\n";
 		cout << "3 - Staff Phone\n";
-		cout << "4 - Role\n";
-		cout << "5 - Previous page\n\n";
+		cout << "4 - Return to staff menu\n\n";
 		cout << "Enter your choice : ";
 		cin >> option;
 
@@ -494,10 +435,7 @@ void StaffMngmtModule::staffUpdate(string* userData){
 			staffUpdatePhone(userData);
 			break;
 		case 4:
-			staffUpdateRole(userData);
-			break;
-		case 5:
-			staffListView();
+			staffMenu();
 			break;
 		}
 
@@ -512,6 +450,7 @@ void StaffMngmtModule::staffUpdateIC(string* userData){
 	string staffIC;
 
 	do {
+		cout << "\x1B[94mPlease enter the IC number without '-' and using this format (010203040606)\033[0m\n\n";
 		cout << "\n\nCurrent staff IC : " << userData[1] << endl;
 		cout << "New staff IC : ";
 		cin >> staffIC;
@@ -545,7 +484,7 @@ void StaffMngmtModule::staffUpdateIC(string* userData){
 
 	cout << "\n\x1B[32mStaff IC has been successfully updated\033[0m\n";
 	system("pause");
-	staffListView();
+	staffMenu();
 }
 
 //function to edit staff name
@@ -579,7 +518,7 @@ void StaffMngmtModule::staffUpdateName(string* userData){
 
 	cout << "\n\x1B[32mStaff Name has been successfully updated\033[0m\n";
 	system("pause");
-	staffListView();
+	staffMenu();
 }
 
 //function to edit staff phone
@@ -618,76 +557,7 @@ void StaffMngmtModule::staffUpdatePhone(string* userData){
 
 	cout << "\n\x1B[32mStaff phone number has been successfully updated\033[0m\n";
 	system("pause");
-	staffListView();
-}
-
-//function to edit staff role
-void StaffMngmtModule::staffUpdateRole(string* userData){
-
-	string currentRole;
-	int staffRole;
-
-	switch (stoi(userData[4])) {
-	case 0:
-		currentRole = "Unassigned";
-		break;
-	case 1:
-		currentRole = "superadmin";
-		break;
-	case 2:
-		currentRole = "Nurse";
-		break;
-	case 3:
-		currentRole = "Caretaker";
-		break;
-	}
-
-	int option;
-	bool continueLoop = true;
-
-	do {
-		cout << "\n\nCurrent staff Role : " << currentRole << endl;
-		cout << "Please select user role\n\n";
-		cout << "1 - Superadmin\n";
-		cout << "2 - Nurse\n";
-		cout << "3 - Care taker\n";
-
-		cout << "Please select new role : ";
-		cin >> option;
-
-
-		switch (option) {
-		case 1:
-			staffRole = 1;
-			continueLoop = false;
-			cout << "debug";
-			break;
-		case 2:
-			staffRole = 2;
-			continueLoop = false;
-			break;
-		case 3:
-			staffRole = 3;
-			continueLoop = false;
-			break;
-		default:
-			cout << "\n\x1B[33mInvalid input\033[0m\n";
-			cout << "\x1B[33mPlease try again\033[0m\n\n";
-			system("pause");
-			staffUpdateRole(userData);
-		}
-	} while (continueLoop);
-
-	string query =
-		"UPDATE users SET "
-		"staffRole =" + to_string(staffRole) + " WHERE staffID ='" + userData[0] + "'";
-
-	const char* cu = query.c_str();
-	conState = mysql_query(connection, cu);
-
-	cout << "\n\x1B[32mStaff Role has been successfully updated\033[0m\n";
-	system("pause");
-	staffListView();
+	staffMenu();
 }
 
 //function to remove user
@@ -728,7 +598,7 @@ void StaffMngmtModule::staffRemove(string* userData){
 			if (!conState) {
 				cout << "\n\x1B[32mStaff has been successfully removed\033[0m\n";
 				system("pause");
-				staffListView();
+				staffMenu();
 			}
 			else {
 				cout << "\x1B[31m\nQuery error\033[0m\n" << mysql_errno(connection) << endl;
@@ -739,7 +609,7 @@ void StaffMngmtModule::staffRemove(string* userData){
 		case 'N':
 			cout << "Redirecting you to previous page\n";
 			system("pause");
-			staffListView();
+			staffMenu();
 			break;
 		default:
 			cout << "\x1B[31m\nInvalid input, please try again\033[0m\n" << mysql_errno(connection) << endl;
@@ -747,4 +617,183 @@ void StaffMngmtModule::staffRemove(string* userData){
 			staffRemove(userData);
 		}
 	} while (continueLoop);
+}
+
+//this function is called from staffmeny() function
+//if the user pick list staff option and search for specific staff
+//this function will ask what their next action
+void StaffMngmtModule::staffNextAction(string* userData) {
+
+	int choice = 0;
+	
+	cout << "\n\x1B[94mPlease select your next action\033[0m\n\n";
+	cout << "1 - Update staff\n";
+	cout << "2 - Remove staff\n";
+	cout << "3 - Go back to staff menu\n";
+	cout << "Enter your choice : ";
+	cin >> choice;
+	
+	if (cin.fail()) {
+		cin.clear();
+		cin.ignore();
+		cout << "\n\x1B[31mInvalid input, please try again\033[0m\n";
+		system("pause");
+		staffMenu();
+	}
+	else {
+		switch (choice) {
+		case 1:
+			staffUpdate(userData);
+			break;
+		case 2:
+			staffRemove(userData);
+			break;
+		case 3:
+			staffMenu();
+			break;
+		}
+	}
+}
+
+//This function is called from staffMenu() function
+//where this function is for general search such as search by name, IC, phone number
+void StaffMngmtModule::staffGeneralSearch(){
+
+	staffListView();
+
+	string searchProperty;
+
+	cout << "\n\x1B[94mYou can search staff on database via their staffID, name, IC number or phone number\033[0m\n\n";
+	cout << "Enter your staff properties : ";
+	cin >> searchProperty;	
+
+	string query =
+		"SELECT staffID, staffIC, staffName, staffPhone, staffRole FROM users "
+		"WHERE staffID LIKE '%" + searchProperty + "%' "
+		"OR staffName LIKE '%" + searchProperty + "%' "
+		"OR staffIC LIKE '%" + searchProperty + "%' "
+		"OR staffPhone LIKE '%" + searchProperty + "%'";
+	const char* cu = query.c_str();
+	conState = mysql_query(connection, cu);
+
+	
+	if (!conState) {
+		res = mysql_store_result(connection);
+		int num_fields = mysql_num_fields(res);
+
+		if (num_fields > 0) {
+			
+			system("pause");
+			system("cls");
+			art.logoArt();
+			art.directoryArt("Main Module Menu/Staff Management Module/Search User");
+
+			clitable::Table table;
+			clitable::Column c[5] = {
+					clitable::Column("Staff ID",  clitable::Column::CENTER_ALIGN, clitable::Column::CENTER_ALIGN, 1, 8, clitable::Column::NON_RESIZABLE),
+					clitable::Column("Staff IC",  clitable::Column::CENTER_ALIGN, clitable::Column::CENTER_ALIGN, 1, 15, clitable::Column::NON_RESIZABLE),
+					clitable::Column("Staff Name",  clitable::Column::CENTER_ALIGN, clitable::Column::LEFT_ALIGN, 1, 50, clitable::Column::NON_RESIZABLE),
+					clitable::Column("Staff Phone",  clitable::Column::CENTER_ALIGN, clitable::Column::CENTER_ALIGN, 1, 15, clitable::Column::NON_RESIZABLE),
+					clitable::Column("Role",  clitable::Column::CENTER_ALIGN, clitable::Column::CENTER_ALIGN, 1, 11, clitable::Column::NON_RESIZABLE)
+			};
+
+			for (int i = 0; i < 5; i++) table.addColumn(c[i]);
+
+			while (row = mysql_fetch_row(res)) {
+				vector<string> row_data; // Create vector to hold data
+
+				// Copy each field from the MySQL row into the vector
+				for (int i = 0; i < num_fields; i++) {
+
+					//convert int type value from DB to readable string
+					if (i == 4) {
+						int roleValue = atoi(row[i]);
+						row_data.push_back(misc.getRoleString(roleValue));
+					}
+					else {
+						// Add other fields to the vector
+						row_data.push_back(row[i] ? row[i] : "NULL");
+					}
+				}
+				// Convert the vector to array 
+				string* userData = &row_data[0];
+
+				//add data to the table
+				table.addRow(userData);
+			}
+			cout << table.draw() << endl;
+			mysql_free_result(res);
+		}
+		else {
+			cout << "\n\x1B[31mStaff doesn't exist within such search properties. Please try again\033[0m\n";
+			system("pause");
+			staffGeneralSearch();
+		}
+	}
+	else {
+		cout << "\x1B[31mQuery error\033[0m\n" << mysql_errno(connection) << endl;
+		exit(0);
+	}
+
+
+	do {
+		char option;
+		cout << "\n\x1B[94mDo you found your staff properties?\033[0m\n\n";
+		cout << "Enter your choice (Y/N) : ";
+
+		cin >> option;
+
+		switch (option) {
+		case 'Y':
+		case 'y':
+			break;
+		case 'N':
+		case 'n':
+			cout << "\n\x1B[94mRedirecting you back to search page\033[0m\n";
+			system("pause");
+			staffGeneralSearch();
+			break;
+		default:
+			cout << "\x1B[31m\nInvalid input, please try again\033[0m\n" << mysql_errno(connection) << endl;
+			system("pause");
+			staffGeneralSearch();
+		}
+		break;
+	} while (true);
+
+	do {
+		string staffID;
+		cout << "\nPlease enter the staff ID : ";
+		cin >> staffID;
+
+		string query = "SELECT * FROM users WHERE staffID ='" + staffID + "'";
+		const char* cu = query.c_str();
+		conState = mysql_query(connection, cu);
+
+		if (!conState) {
+			res = mysql_store_result(connection);
+			if (mysql_num_rows(res) > 0) {
+
+				row = mysql_fetch_row(res);
+				string* userData = new string[5];
+
+				for (int i = 0; i < 5; i++) {
+					userData[i] = row[i];
+				}
+				staffNextAction(userData);
+				break;
+			}
+			else {
+				cout << "\n\x1B[31mStaff doesn't exist. Please try again\033[0m\n";
+				system("pause");
+				staffGeneralSearch();
+			}
+		}
+		else {
+			cout << "\x1B[31mQuery error\033[0m\n" << mysql_errno(connection) << endl;
+			exit(0);
+		}
+
+	} while (true);
+
 }

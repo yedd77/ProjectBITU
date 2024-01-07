@@ -13,12 +13,13 @@ public:
 	void staffMenu();
 	void staffRegistration();
 	void staffListView();
-	void staffSearch();	
+	string* staffSearch();	
 	void staffUpdate(string* userData);
 	void staffUpdateIC(string* userData);
 	void staffUpdateName(string* userData);
 	void staffUpdatePhone(string* userData);
-	void staffUpdateRole(string* userData);
 	void staffRemove(string* userData);
+	void staffNextAction(string* userData);
+	void staffGeneralSearch();
 };
 #endif // !STAFFMNGMTMODULE_H

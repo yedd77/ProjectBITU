@@ -81,7 +81,7 @@ void  Auth::login() {
 	art.logoArt();
 	string staffIC, password;
 
-	cout << "\x1B[94mPlease login to access the system\033[0m\n";
+	cout << "\x1B[96mPlease login to access the system\033[0m\n";
 	cout << "Enter your IC number : ";
 	cin >> staffIC;
 

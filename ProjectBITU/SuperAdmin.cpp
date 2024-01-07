@@ -26,7 +26,8 @@ void SuperAdmin::superAdminMenu() {
 	cout << "1 - Meds Storage Management Module (MSMM)\n";
 	cout << "2 - Resident Management Module (RMM)\n";
 	cout << "3 - Staff Management Module (SMM)\n";
-	cout << "4 - Log out\n\n";
+	cout << "4 - Daily Reporter Module (DRM)\n";
+	cout << "5 - Log out\n\n";
 
 	cout << "Please enter your choice : ";
 
@@ -58,6 +59,11 @@ void SuperAdmin::superAdminMenu() {
 			staffModule.staffMenu();
 			break;
 		case 4:
+			cout << "\nRedirecting you to Daily Reporter Module\n";
+			system("pause");
+			//TODO: Add Daily Reporter Module
+			break;
+		case 5:
 			system("pause");
 			if (!auth.logout()) {
 				superAdminMenu();
