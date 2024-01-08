@@ -67,7 +67,7 @@ void StaffMngmtModule::staffMenu(){
 			staffRemove(userData);
 		}
 		else if (option == 4) {
-			cout << "\nRedirecting you to Staff List\n";
+			cout << "\nRedirecting you to staff List\n";
 			system("pause");
 			staffListView();
 			string* userData = staffSearch();
@@ -619,7 +619,7 @@ void StaffMngmtModule::staffRemove(string* userData){
 	} while (continueLoop);
 }
 
-//this function is called from staffmeny() function
+//this function is called from staffmenu() function
 //if the user pick list staff option and search for specific staff
 //this function will ask what their next action
 void StaffMngmtModule::staffNextAction(string* userData) {
@@ -629,7 +629,7 @@ void StaffMngmtModule::staffNextAction(string* userData) {
 	cout << "\n\x1B[94mPlease select your next action\033[0m\n\n";
 	cout << "1 - Update staff\n";
 	cout << "2 - Remove staff\n";
-	cout << "3 - Go back to staff menu\n";
+	cout << "3 - Go back to staff menu\n\n";
 	cout << "Enter your choice : ";
 	cin >> choice;
 	
@@ -638,7 +638,7 @@ void StaffMngmtModule::staffNextAction(string* userData) {
 		cin.ignore();
 		cout << "\n\x1B[31mInvalid input, please try again\033[0m\n";
 		system("pause");
-		staffMenu();
+		staffNextAction(userData);
 	}
 	else {
 		switch (choice) {
@@ -649,6 +649,9 @@ void StaffMngmtModule::staffNextAction(string* userData) {
 			staffRemove(userData);
 			break;
 		case 3:
+			staffMenu();
+			break;
+		default:
 			staffMenu();
 			break;
 		}
@@ -663,7 +666,7 @@ void StaffMngmtModule::staffGeneralSearch(){
 
 	string searchProperty;
 
-	cout << "\n\x1B[94mYou can search staff on database via their staffID, name, IC number or phone number\033[0m\n\n";
+	cout << "\n\x1B[94mYou can search staff from the database via their staffID, name, IC number or phone number\033[0m\n\n";
 	cout << "Enter your staff properties : ";
 	cin >> searchProperty;	
 

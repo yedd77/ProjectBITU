@@ -12,11 +12,13 @@ public :
 	void MedsMgmntMenu();
 	void MedsMgmntAdd();
 	void medsMgmntView();
-	void medsSearch();
+	string* medsSearch();
 	void medsUpdate(string* medsData);
 	void medsUpdatePrice(string* medsData);
 	void medsUpdateDesc(string* medsData);
 	void medsRemove(string* medsData);
+	void medsNextAction(string* medsData);
+	void medsGeneralSearch();
 
 	void batchMgmntAdd(string* medsData);
 };

@@ -23,10 +23,12 @@ void MedMgmntSub::MedsMgmntMenu() {
 
 	cout << "\x1B[94mPlease select your next action\033[0m\n\n";
 
-	cout << "1 - Add new medicines\n";
-	cout << "2 - View existing medicines\n";
-	cout << "3 - Go back to previous menu\n";
-	cout << "4 - Log out\n";
+	cout << "1 - Register new medicine\n";
+	cout << "2 - Update existing medicine\n";
+	cout << "3 - Remove existing medicine\n"; 
+	cout << "4 - View medicines list\n";
+	cout << "5 - Search existing medicine\n";
+	cout << "6 - Go back to previous menu\n"; 
 
 	cout << "\nEnter your choice : ";
 
@@ -41,24 +43,44 @@ void MedMgmntSub::MedsMgmntMenu() {
 		MedsMgmntMenu();
 	}
 	else {
-		switch (option) {
-		case 1:
+		
+		if (option == 1) {
+			cout <<"\nRedirecting you to register new medicine page\n";
+			system("pause");
 			MedsMgmntAdd();
-			break;
-		case 2:
+		}
+		else if (option == 2) {
+			cout << "\nRedirecting you to update existing medicine page\n";
+			system("pause");
 			medsMgmntView();
-			break;
-		case 3:
-			cout << "\nRedirecting you back to previous menu\n";
+			string* medsData = medsSearch();
+			system("pause");
+			medsUpdate(medsData);
+		}
+		else if (option == 3) {
+			cout << "\nRedirecting you to remove medicine record page\n";
+			system("pause");
+			medsMgmntView();
+			string* medsData = medsSearch();
+			system("pause");
+			medsRemove(medsData);
+		}
+		else if (option == 4) {
+			cout << "\nRedirecting you to medicine list page\n";
+			system("pause");
+			medsMgmntView();
+			string* medsData = medsSearch();
+			medsNextAction(medsData);
+		}
+		else if (option == 5) {
+			cout << "\nRedirecting you to previous menu\n";
 			system("pause");
 			medStrgModule.nurseModuleMenu();
-			break;
-		case 4:
+		}
+		else {
+			cout << "\n\x1B[31mInvalid input, please try again\033[0m\n";
 			system("pause");
-			if (!auth.logout()) {
-				MedsMgmntMenu();
-			}
-			break;
+			MedsMgmntMenu();
 		}
 	}
 }
@@ -309,44 +331,6 @@ void MedMgmntSub::medsMgmntView() {
 		}
 		cout << table.draw() << endl;
 		mysql_free_result(res);
-
-
-		bool continueLoop3 = true;
-
-		do {
-			int option = 0;
-
-			cout << "\x1B[94mPlease enter your next action\033[0m\n\n";
-			cout << "1 - Edit or remove medicine\n";
-			cout << "2 - Go back to previous menu\n\n";
-			cout << "Enter your choice : ";
-
-			if (cin >> option) {
-
-				switch (option) {
-				case 1:
-					continueLoop3 = false;
-					option = 0;
-					medsSearch();
-					break;
-				case 2:
-					cout << "\nRedirecting you back to previous menu\n";
-					system("pause");
-					MedsMgmntMenu();
-					break;
-				}
-			}
-			else {
-				continueLoop3 = true;
-				option = 0;
-				cout << "\n\x1B[31mInvalid input\033[0m\n";
-				cout << "\x1B[31mPlease try again\033[0m\n\n";
-				cin.clear();
-				cin.ignore();
-			}
-
-
-		} while (continueLoop3);
 	}
 	else {
 		cout << "\n\x1B[31mQuery error\033[0m\n" << mysql_errno(connection) << endl;
@@ -355,7 +339,7 @@ void MedMgmntSub::medsMgmntView() {
 }
 
 //function to search meds for edit or remove user
-void MedMgmntSub::medsSearch() {
+string* MedMgmntSub::medsSearch() {
 
 	string medsID;
 	cin.clear();
@@ -393,62 +377,18 @@ void MedMgmntSub::medsSearch() {
 	} while (true);
 
 	row = mysql_fetch_row(res);
-	string medsData[8];
-	boolean continueLoop = true;
-	int option = 0;
-	int medsDataIndex = 0;
+	string* medsData = new string[8];
 
 	//looping through column from database
 	for (int i = 0; i < 8; i++) {
-		if (row[i] != nullptr) {
-			medsData[medsDataIndex] = row[i];
-			medsDataIndex++;
-		}
-		else {
-			medsData[medsDataIndex] = "NULL";
-			medsDataIndex++;
-		}
+		medsData[i] = row[i];
 	}
 
-	do {
-
-		cout << "\x1B[94mPlease select your next option\033[0m\n\n";
-
-		cout << "1 - Edit medicine's information\n";
-		cout << "2 - Remove medicine from database\n";
-		cout << "3 - Add new batch of stock for this medicines\n";
-		cout << "4 - Go back to previous menu\n";
-		cout << "Enter your option : ";
-
-		cin >> option;
-
-		if (cin.fail()) {
-			cin.clear();
-			cin.ignore();
-			cout << "\n\x1B[31mInvalid input\033[0m\n";
-			cout << "\x1B[31mPlease try again\033[0m\n\n";
-			option = 0;
-			continue;
-		}
-
-		switch (option) {
-		case 1:
-			medsUpdate(medsData);
-			break;
-		case 2:
-			medsRemove(medsData);
-			break;
-		case 3:
-			batchMgmntAdd(medsData);
-			break;
-		case 4:
-			medsMgmntView();
-			break;
-		}
-
-	} while (continueLoop);
+	return medsData;
 }
 
+//function that is called from medsMgmntMenu() function
+//asking user what they want to update
 void MedMgmntSub::medsUpdate(string* medsData) {
 	system("cls");
 	art.logoArt();
@@ -467,7 +407,7 @@ void MedMgmntSub::medsUpdate(string* medsData) {
 
 	for (int i = 0; i < 7; i++) table.addColumn(c[i]);
 
-
+	
 	string updatedData[7];
 	int j = 0;
 	for (int i = 0; i < 8; i++) {
@@ -507,7 +447,7 @@ void MedMgmntSub::medsUpdate(string* medsData) {
 		cout << "\n\x1B[94mSelect Column you want to edit\033[0m\n\n";
 		cout << "1 - Meds Price\n";
 		cout << "2 - Meds Description\n";
-		cout << "3 - Go back to previous menu\n";
+		cout << "3 - Return to medicine management menu\n";
 		cout << "Enter your choice : ";
 		cin >> option;
 
@@ -527,7 +467,7 @@ void MedMgmntSub::medsUpdate(string* medsData) {
 			medsUpdateDesc(medsData);
 			break;
 		case 3:
-			medsMgmntView();
+			MedsMgmntMenu();
 			break;
 		}
 	} while (continueLoop);
@@ -567,9 +507,10 @@ void MedMgmntSub::medsUpdatePrice(string* medsData) {
 
 	cout << "\n\x1B[32mMedicine's price successfully updated\033[0m\n";
 	system("pause");
-	medsMgmntView();
+	MedsMgmntMenu();
 }
 
+//Function to update meds description
 void MedMgmntSub::medsUpdateDesc(string* medsData) {
 	string medDesc;
 
@@ -589,9 +530,10 @@ void MedMgmntSub::medsUpdateDesc(string* medsData) {
 
 	cout << "\n\x1B[32mMedicine's description successfully updated\033[0m\n";
 	system("pause");
-	medsMgmntView();
+	MedsMgmntMenu();
 }
 
+//function to remove medicine record from DB
 void MedMgmntSub::medsRemove(string* medsData) {
 
 	system("cls");
@@ -642,7 +584,9 @@ void MedMgmntSub::medsRemove(string* medsData) {
 
 	do {
 		char confirm;
-		cout << "\x1B[33mBy deleting this medicines, the record of stocks inside the inventory also will be deleted.\033[0m\n";
+		cout << "\x1B[33mBy deleting this medicines, the record of stocks inside the inventory \033[0m\n";
+		cout << "\x1B[33mand prescription that have this medicine also will be deleted\033[0m\n";
+		cout << "\x1B[33mIt is inadvisable to delete this medicine. Please make sure all inventory matches your current action\033[0m\n";
 		cout << "\x1B[33mAre you sure want to remove this medicines?\033[0m\n";
 		cout << "\nEnter your choice (Y/N) : ";
 		cin >> confirm;
@@ -656,7 +600,7 @@ void MedMgmntSub::medsRemove(string* medsData) {
 			if (!conState) {
 				cout << "\n\x1B[32mMedicine successfully removed\033[0m\n";
 				system("pause");
-				medsMgmntView();
+				MedsMgmntMenu();
 			}
 			else {
 				cout << "\n\x1B[31mQuery error\033[0m\n" << mysql_errno(connection) << endl;
@@ -667,7 +611,7 @@ void MedMgmntSub::medsRemove(string* medsData) {
 		case 'N':
 			cout << "Redirecting you to previous page\n";
 			system("pause");
-			medsMgmntView();
+			MedsMgmntMenu();
 			break;
 		default:
 			cout << "\n\x1B[31mInvalid input, please try again\033[0m\n";
@@ -678,165 +622,172 @@ void MedMgmntSub::medsRemove(string* medsData) {
 	} while (continueLoop);
 }
 
-//function to add new batch of stock for a meds
-void MedMgmntSub::batchMgmntAdd(string* medsData) {
-	system("cls");
-	art.logoArt();
-	art.directoryArt("MSMM/Meds Management sub-module/View Medicines/Add New Meds Batch");
+//this function is called from medsMgmntMenu() function
+//if the user select view medicine list option and search by medicine properties
+//this function will ask what thier next action
+void MedMgmntSub::medsNextAction(string* medsData){
 
-	string queryBatch = "SELECT * FROM batches WHERE medsID = '" + medsData[0] + "'";
-	const char* cu = queryBatch.c_str();
+	int choice = 0;
+
+	cout << "\n\x1B[94mPlease select your next action\033[0m\n\n";
+	cout << "1 - Update medicine\n";
+	cout << "2 - Remove medicine\n";
+	cout << "3 - Go back to medicine menu\n\n";
+	cout << "Enter your choice : ";
+	cin >> choice;
+
+	if (cin.fail()) {
+		cin.clear();
+		cin.ignore();
+		cout << "\n\x1B[31mInvalid input, please try again\033[0m\n";
+		system("pause");
+		medsNextAction(medsData);
+	}
+	else {
+
+		switch (choice) {
+		case 1:
+			medsUpdate(medsData);
+			break;
+		case 2 :
+			medsRemove(medsData);
+			break;
+		case 3:
+			MedsMgmntMenu();
+			break;
+		default:
+			medsNextAction(medsData);
+			break;
+		}
+	}
+}
+
+//this function is to search the properties of the medicine record in DB
+//such as medsID, medsName, medsDesc, medsBrand
+//and will ask user for selected meds and past the data to medsNextAction
+void MedMgmntSub::medsGeneralSearch(){
+
+	medsMgmntView();
+
+	string searchProperty;
+
+	cout << "\n\x1B[94mYou can search meds from the database via their medsID, name, description and brand\033[0m\n\n";
+	cout << "Enter your medicine properties : ";
+	cin >> searchProperty;
+
+	string query =
+		"SELECT medsID, medsName, medsDosage, medsType, medsPrice, medsBrand FROM medicines "
+		"WHERE medsID LIKE '%" + searchProperty + "%' "
+		"OR medsName LIKE '%" + searchProperty + "%' "
+		"OR medsDesc LIKE '%" + searchProperty + "%' "
+		"OR medsBrand LIKE '%" + searchProperty + "%' ";
+
+	const char* cu = query.c_str();
 	conState = mysql_query(connection, cu);
-	int batchCount;
 
 	if (!conState) {
 		res = mysql_store_result(connection);
-		batchCount = static_cast<int>(mysql_num_rows(res));
+		int num_fields = mysql_num_fields(res);
 
-		//check if there's any batch of this meds
-		if (batchCount == 0) {
-			art.directoryArt("There's no recorded stock for " + medsData[1] + " (medsID - " + medsData[0] + ")");
-		}
-		else {
-			clitable::Table batchTable;
-			clitable::Column bc[4] = {
-				clitable::Column("Batch ID",  clitable::Column::CENTER_ALIGN, clitable::Column::CENTER_ALIGN, 1, 8, clitable::Column::NON_RESIZABLE),
-				clitable::Column("Batch Quantity",  clitable::Column::CENTER_ALIGN, clitable::Column::CENTER_ALIGN, 1, 19, clitable::Column::NON_RESIZABLE),
-				clitable::Column("Batch Date Entry",  clitable::Column::CENTER_ALIGN, clitable::Column::CENTER_ALIGN, 1, 40, clitable::Column::NON_RESIZABLE),
-				clitable::Column("Batch Expiry Date",  clitable::Column::CENTER_ALIGN, clitable::Column::CENTER_ALIGN, 1, 40, clitable::Column::NON_RESIZABLE)
+		if (num_fields > 0) {
+
+			system("pause");
+			system("cls");
+			art.logoArt();
+			art.directoryArt("MSMM/Meds Management sub-module/Search medicine");
+
+			clitable::Table table;
+			clitable::Column c[6] = {
+					clitable::Column("Meds ID",  clitable::Column::CENTER_ALIGN, clitable::Column::CENTER_ALIGN, 1, 8, clitable::Column::NON_RESIZABLE),
+					clitable::Column("Meds Name",  clitable::Column::CENTER_ALIGN, clitable::Column::LEFT_ALIGN, 1, 35, clitable::Column::NON_RESIZABLE),
+					clitable::Column("Meds  Dosage",  clitable::Column::CENTER_ALIGN, clitable::Column::CENTER_ALIGN, 1, 6, clitable::Column::NON_RESIZABLE),
+					clitable::Column("Meds Type",  clitable::Column::CENTER_ALIGN, clitable::Column::CENTER_ALIGN, 1, 11, clitable::Column::NON_RESIZABLE),
+					clitable::Column("Meds Price",  clitable::Column::CENTER_ALIGN, clitable::Column::CENTER_ALIGN, 1, 11, clitable::Column::NON_RESIZABLE),
+					clitable::Column("Meds Brand",  clitable::Column::CENTER_ALIGN, clitable::Column::LEFT_ALIGN, 1, 25, clitable::Column::NON_RESIZABLE)
 			};
 
-			for (int i = 0; i < 4; i++) batchTable.addColumn(bc[i]);
+			for (int i = 0; i < 6; i++) table.addColumn(c[i]);
 
-			batchTable.addTitle("Batch Details For : " + medsData[1] + " (medsID - " + medsData[0] + ")");
-
-			int x = 0;
 			while (row = mysql_fetch_row(res)) {
+				vector<string>row_data;
+				for(int i = 0; i < num_fields; i++) row_data.push_back(row[i] ? row[i] : "NULL");
+				string* medsData = &row_data[0];
 
-				vector<string> batchData;
-
-				for (int i = 0; i < 5; i++) {
-					if (i == 1) {
-						continue;
-						x++;
-					}
-					else {
-						batchData.push_back(row[i] ? row[i] : "NULL");
-						x++;
-					}
-				}
-
-				string* newBatchData = &batchData[0];
-				batchTable.addRow(newBatchData);
+				table.addRow(medsData);
 			}
-			cout << batchTable.draw() << endl;
-
-			char confirm;
-			cout << "\n\x1B[94mYou are about to add new batch of stocks of this medicines.\033[0m\n";
-			cout << "\x1B[94mDo you want to proceed this action?\033[0m\n";
-			cout << "\nEnter your choice (Y/N) : ";
-			cin >> confirm;
-
-			switch (confirm) {
-			case 'Y':
-				break;
-			case 'N':
-				medsMgmntView();
-				break;
-			default:
-				cout << "\n\x1B[31mInvalid input, please try again\033[0m\n";
-				medsMgmntView();
-			}
-		}
-	}
-	else {
-		cout << "\n\x1B[31mQuery error\033[0m\n" << mysql_errno(connection) << endl;
-		exit(0);
-	}
-
-	string batchID, batchQty, batchExpDate, medsID, batchDateEntry;
-
-	//batchID instance
-	//retrieve last record on DB
-	string queryGetLast = "SELECT * FROM batches ORDER BY batchID DESC LIMIT 1";
-	cout << queryGetLast << endl;
-	
-
-	const char* q = queryGetLast.c_str();
-	conState = mysql_query(connection, q);
-
-	if (!conState) {
-		res = mysql_store_result(connection);
-		row = mysql_fetch_row(res);
-	}
-	else {
-		cout << "\x1B[31m\nQuery error\033[0m\n" << mysql_errno(connection) << endl;
-		exit(0);
-	}
-	
-	//medsID instance
-	medsID = medsData[0];
-
-	//batch ID instance
-	string passedID;
-	if (row) {
-		passedID = row[0];
-	}
-	else {
-		passedID = "0000";
-	}
-	batchID = misc.createID(passedID, "BAT");
-
-	//batchQty instance
-	do {
-		string qty;
-		cout << "\n\x1B[94mPlease enter quantity of stock of this batch\033[0m";
-		cout << "\nEnter batch quantity : ";
-		cin >> qty;
-
-		if (!misc.isNumeric(qty)) {
-			qty.clear();
-			cin.clear();
-			cin.ignore(INT_MAX, '\n');
-			cout << "\x1B[33mInvalid response, please try again\033[0m\n";
+			cout << table.draw() << endl;
+			mysql_free_result(res);
 		}
 		else {
-			batchQty = qty;
-			break;
+			cout << "\n\x1B[31mMedicine doesn't exist within such search properties. Please try again\033[0m\n";
+			system("pause");
+			medsGeneralSearch();
 		}
-	} while (true);
-
-	//Expiry date instance
-	do {
-		cout << "\n\x1B[94mPlease enter batch expiry date using this format YYYY-MM-DD ex: 2029-12-01\033[0m";
-		cout << "\nEnter batch expiry date : ";
-		cin >> batchExpDate;
-
-		if (misc.isValidDateFormat(batchExpDate)) {
-			break;
-		}
-		batchExpDate.clear();
-	} while (true);
-
-	string insertQuery = "INSERT INTO batches "
-		"(batchID, medsID, batchQuantity, batchDateEntry, batchExpiry ) "
-		"VALUES "
-		"('" + batchID + "', '" + medsID + "', '" + batchQty + "',  CURRENT_DATE() , '" + batchExpDate + "')";
-
-	const char* q2 = insertQuery.c_str();
-	conState = mysql_query(connection, q2);
-
-	//check query execution
-	if (!conState) {
-		cout << "\n\x1B[32mBatch successfully added to database\033[0m\n";
 	}
 	else {
-		cout << "\n\x1B[31mQuery error\033[0m\n" << mysql_errno(connection) << endl;
+		cout << "\x1B[31mQuery error\033[0m\n" << mysql_errno(connection) << endl;
 		exit(0);
 	}
+	
+	do {
+		char option;
+		cout << "\n\x1B[94mDo you found your medicine properties?\033[0m\n\n";
+		cout << "Enter your choice (Y/N) : ";
+		cin >> option;
 
-	cout << "Directing you back to previous menu\n";
+		switch (option) {
+		case'y':
+		case'Y':
+			break;
+		case'n':
+		case 'N':
+			cout << "\n\x1B[94mRedirecting you back to search page\033[0m\n";
+			system("pause");
+			medsGeneralSearch();
+			break;
+		default :
+			cout << "\x1B[31m\nInvalid input, please try again\033[0m\n" << mysql_errno(connection) << endl;
+			system("pause");
+			medsGeneralSearch();
+		}
+		break;
+	} while (true);
 
-	system("pause");
-	MedsMgmntMenu();
+	do {
+
+		string medsID;
+		cout << "\nPlease enter medsID : ";
+		cin >> medsID;	
+
+		string selectQuery = "SELECT * FROM medicines WHERE medsID ='" + medsID + "'";
+		const char* sq = selectQuery.c_str();
+		conState = mysql_query(connection, sq);
+
+		if (!conState) {
+			res = mysql_store_result(connection);
+			int numfields = mysql_num_fields(res);
+
+			if (mysql_num_rows(res) > 0) {
+
+				row = mysql_fetch_row(res);
+				string* medsData = new string[8];
+				
+				for (int i = 0; i < numfields; i++) {
+
+					medsData[i] = row[i];
+				}
+				medsNextAction(medsData);
+				break;
+			}
+			else {
+				cout << "\n\x1B[31mMedicine doesn't exist. Please try again\033[0m\n";
+				system("pause");
+				medsGeneralSearch();
+			}
+		}
+		else {
+			cout << "\x1B[31mQuery error\033[0m\n" << mysql_errno(connection) << endl;
+			exit(0);
+		}
+	} while (true);
 }

@@ -5,3 +5,4 @@ TODO
 [] if no data in table, shows no data [prescription] local Var not init 482 PREMGNTSUB
 [] add case where resident just need to take the meds if needed, add status missed
 [] add updater to set and remove past data
+[] unable to split same medicine twice
