@@ -90,8 +90,8 @@ void StaffMngmtModule::staffMenu(){
 		else {
 			cout << "\n\x1B[31mInvalid input, please try again\033[0m\n";
 			system("pause");
-			staffMenu();
 			option = 0;
+			staffMenu();
 		}
 	}
 }

@@ -77,6 +77,11 @@ void MedMgmntSub::MedsMgmntMenu() {
 			system("pause");
 			medStrgModule.nurseModuleMenu();
 		}
+		else if (option == 6) {
+			cout << "\nRedirecting you to previous menu\n";
+			system("pause");
+			medStrgModule.nurseModuleMenu();
+		}
 		else {
 			cout << "\n\x1B[31mInvalid input, please try again\033[0m\n";
 			system("pause");

@@ -19,7 +19,5 @@ public :
 	void medsRemove(string* medsData);
 	void medsNextAction(string* medsData);
 	void medsGeneralSearch();
-
-	void batchMgmntAdd(string* medsData);
 };
 #endif // !MEDMGMNTSUB_H

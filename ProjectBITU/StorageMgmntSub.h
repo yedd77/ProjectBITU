@@ -11,6 +11,9 @@ public:
 
 	void StorageMgmntMenu();
 	string getMedicineBatchesID();
+	string getMedicineID();
+	void batchMgmntAdd(string medsID);
+	void viewMedicineBatches();
 	void StorageMgmntUpdateBatches(string ID);
 	void StorageMgmntUpdateBatchesQuantity(string ID, string oldQty);
 	void StorageMgmntUpdateBatchesExpiry(string ID, string oldQty);
