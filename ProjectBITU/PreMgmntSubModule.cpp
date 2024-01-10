@@ -28,7 +28,6 @@ void PreMgmntSubModule::preMgmntMenu() {
 	cout << "2 - Remove prescription\n";
 	cout << "3 - View prescription\n";
 	cout << "4 - Go back to previous menu\n";
-	cout << "5 - Log out\n";
 
 	cout << "\nPlease enter your choice : ";
 
@@ -57,12 +56,6 @@ void PreMgmntSubModule::preMgmntMenu() {
 			cout << "\nRedirecting you to previous menu\n";
 			system("pause");
 			medStrgModule.nurseModuleMenu();
-			break;
-		case 5:
-			system("pause");
-			if (!auth.logout()) {
-				preMgmntMenu();
-			}
 			break;
 		}
 	}

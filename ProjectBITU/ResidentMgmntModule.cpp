@@ -20,7 +20,7 @@ extern Verifier verifier;
 //this function is called when admin select resident management module
 // automatically call residentMenu() function if the user is not admin
 // this will show all the resident management module menu
-void ResidentMgmntModule::residentMenu(){
+void ResidentMgmntModule::residentMenu() {
 
 	system("cls");
 	art.logoArt();
@@ -29,10 +29,12 @@ void ResidentMgmntModule::residentMenu(){
 	cout << "\x1B[94mPlease select your next action\033[0m\n\n";
 
 	cout << "1 - Register New Resident\n";
-	cout << "2 - View Existing Resident\n";
-	cout << "3 - Medication Schedule\n";
-	cout << "4 - Go back to Main Module menu\n";
-	cout << "5 - Log out\n";
+	cout << "2 - Update exsitng resident\n";
+	cout << "3 - Delete exsitng resident record\n";
+	cout << "4 - View Existing Resident\n";
+	cout << "5 - Search Resident\n"; 
+	cout << "6 - Medication Schedule\n"; //TODO
+	cout << "7 - Go back to Main Module menu\n"; //TODO
 
 	cout << "\nEnter your choice : ";
 
@@ -47,23 +49,41 @@ void ResidentMgmntModule::residentMenu(){
 		residentMenu();
 	}
 	else {
-		switch (option) {
-		case 1:
-			cout <<"\nRedirecting you to Resident Registration\n";
+
+		if (option == 1) {
+			cout << "\nRedirecting you to Resident Registration\n";
 			system("pause");
 			residentRegistration();
-			break;
-		case 2:
+		}
+		else if (option == 2) {
+			cout << "\nRedirecting you to update resident page\n";
+			system("pause");
+			string resID = residentListView();
+			updateResident(resID);
+
+		}
+		else if (option == 3) {
+			cout << "\nRedirecting you to delete resident record page\n";
+			system("pause");
+			string resID = residentListView();
+			removeResident(resID);
+		}
+		else if (option == 4) {
 			cout << "\nRedirecting you to Resident List\n";
 			system("pause");
-			residentListView();
-			break;
-		case 3:
-			cout << "\nRedirecting you to Medication Schedule\n";
+			string resID = residentListView();
+			selectNextActionRes(resID);
+		}
+		else if (option == 5) {
+			cout << "\nRedirecting you to search resident page\n";
 			system("pause");
-			residentIncompleteSchedule();
-			break;
-		case 4:
+			string resID = searchGeneralResident();
+			selectNextActionRes(resID);
+		}
+		else if (option == 6) {
+			scheduleMenu();
+		}
+		else if (option == 7) {
 			if (verifier.verifyUserAuthorization((conf.getCurrentUserID()))) {
 				admin.superAdminMenu();
 			}
@@ -73,14 +93,11 @@ void ResidentMgmntModule::residentMenu(){
 				system("pause");
 				residentMenu();
 			}
-			break;
-		case 5:
-			cout << "\nRedirectin you to log out page\n";
+		}
+		else {
+			cout << "\n\x1B[31mInvalid input, please try again\033[0m\n";
 			system("pause");
-			if (!auth.logout()) {
-				residentMenu();
-			}
-			break;
+			residentMenu();
 		}
 	}
 }
@@ -353,7 +370,7 @@ void ResidentMgmntModule::residentRegistration(){
 //this function is called after a user select it from residentMenu()
 //this function gonna display all the resident in the database
 //and ask the user what they want to do with the resident
-void ResidentMgmntModule::residentListView(){
+string ResidentMgmntModule::residentListView(){
 
 	system("cls");
 	art.logoArt();
@@ -371,7 +388,7 @@ void ResidentMgmntModule::residentListView(){
 		clitable::Column("Resident IC",  clitable::Column::CENTER_ALIGN, clitable::Column::CENTER_ALIGN, 1, 13, clitable::Column::NON_RESIZABLE),
 		clitable::Column("Resident Name",  clitable::Column::CENTER_ALIGN, clitable::Column::LEFT_ALIGN, 1, 30, clitable::Column::NON_RESIZABLE),
 		clitable::Column("Staff Assigned",  clitable::Column::CENTER_ALIGN, clitable::Column::LEFT_ALIGN, 1, 30, clitable::Column::NON_RESIZABLE),
-		clitable::Column("Room Number",  clitable::Column::CENTER_ALIGN, clitable::Column::CENTER_ALIGN, 1, 5, clitable::Column::NON_RESIZABLE)
+		clitable::Column("Room  Number",  clitable::Column::CENTER_ALIGN, clitable::Column::CENTER_ALIGN, 1, 6, clitable::Column::NON_RESIZABLE)
 	};
 
 	for(int i=0; i<5; i++){residentTable.addColumn(column[i]);}
@@ -420,51 +437,215 @@ void ResidentMgmntModule::residentListView(){
 
 	} while (true);
 
-	do {
-		cout << "\n\x1B[94mPlease select your next action\033[0m\n\n";
+	return resID;
+}
 
-		cout << "1 - Update Resident Information\n";
-		cout << "2 - Remove Resident\n";
-		cout << "3 - Go back to Resident Management Menu\n";
+//this function is called from residentMenu() 
+//after function residentListView() and residentSearch() is called where the user
+//will be asked what to do with th selected resident
+void ResidentMgmntModule::selectNextActionRes(string resID) {
 
-		cout << "\nEnter your choice : ";
+	int option = 0;
 
-		int option;
-		cin >> option;
+	cout << "\n\x1B[94mPlease select your next action\033[0m\n\n";
+	cout << "1 - Update Resident\n";
+	cout << "2 - Delete Resident\n";
+	cout << "3 - Go back to Resident menu\n\n";
 
-		if (cin.fail()) {
-			cin.clear();
-			cin.ignore();
-			cout << "\n\n\x1B[91mInvalid input! Please enter a number.\033[0m\n\n";
+	cout << "\nEnter your choice : ";
+	cin >> option;
+
+	if (cin.fail()) {
+		cin.clear();
+		cin.ignore();
+		cout << "\n\x1B[31mInvalid input, please try again\033[0m\n";
+		system("pause");
+		selectNextActionRes(resID);
+	} 
+	else {
+
+		switch (option) {
+		case 1:
+			cout << "\nRedirecting you to update resident page\n";
 			system("pause");
-			residentListView();
+			updateResident(resID);
+			break;
+		case 2:
+			cout << "\nRedirecting you to delete resident record page\n";
+			system("pause");
+			removeResident(resID);
+			break;
+		case 3:
+			cout << "\nRedirecting you back to Resident menu\n";
+			system("pause");
+			residentMenu();
+			break;
+		default:
+			cout << "\n\x1B[31mInvalid input, please try again\033[0m\n";
+			system("pause");
+			selectNextActionRes(resID);
+			break;
+		}
+	}
+}
+
+//this function is called from residentMenu()
+//user will be asked to enter the resident property that they want to search
+string ResidentMgmntModule::searchGeneralResident(){
+
+	system("cls");
+	art.logoArt();
+	art.directoryArt("Main Module Menu/ Resident Management Module/Resident Management Menu/Search resident");
+
+	string getResidentData = "SELECT r.resID, r.resIC, r.resName, u.staffName, r.resRoomNum "
+		"FROM residents r "
+		"JOIN users u ON r.staffID = u.staffID ";
+	const char* q = getResidentData.c_str();
+	conState = mysql_query(connection, q);
+
+	clitable::Table residentTable;
+	clitable::Column column[5] = {
+		clitable::Column("Resident ID",  clitable::Column::CENTER_ALIGN, clitable::Column::CENTER_ALIGN, 1, 8, clitable::Column::NON_RESIZABLE),
+		clitable::Column("Resident IC",  clitable::Column::CENTER_ALIGN, clitable::Column::CENTER_ALIGN, 1, 13, clitable::Column::NON_RESIZABLE),
+		clitable::Column("Resident Name",  clitable::Column::CENTER_ALIGN, clitable::Column::LEFT_ALIGN, 1, 30, clitable::Column::NON_RESIZABLE),
+		clitable::Column("Staff Assigned",  clitable::Column::CENTER_ALIGN, clitable::Column::LEFT_ALIGN, 1, 30, clitable::Column::NON_RESIZABLE),
+		clitable::Column("Room  Number",  clitable::Column::CENTER_ALIGN, clitable::Column::CENTER_ALIGN, 1, 6, clitable::Column::NON_RESIZABLE)
+	};
+
+	for (int i = 0; i < 5; i++) { residentTable.addColumn(column[i]); }
+
+	if (!conState) {
+		res = mysql_store_result(connection);
+
+		while (row = mysql_fetch_row(res)) {
+			vector<string> rowTable;
+			for (int i = 0; i < 5; i++) { rowTable.push_back(row[i] ? row[i] : "NULL"); }
+			string* userData = &rowTable[0];
+			residentTable.addRow(userData);
+		}
+		mysql_free_result(res);
+	}
+	else {
+		cout << "\x1B[31m\nQuery error\033[0m\n" << mysql_errno(connection) << endl;
+		exit(0);
+	}
+	cout << residentTable.draw() << endl;
+
+	string searchProperty;
+
+	cout << "\n\x1B[94mYou can search resident from the database via their ID, name, IC number or room number\033[0m\n\n";
+	cout << "Enter the resident property to search for : ";
+	cin >> searchProperty;
+
+	//check if the resident exist in the database
+	string checkResident = "SELECT resID, resIC, resName, resRoomNum, resGuardName,	resGuardPhone "
+		"FROM residents "
+		"WHERE resID LIKE '%" + searchProperty + "%' "
+		"OR resIC LIKE '%" + searchProperty + "%' "
+		"OR resName LIKE '%" + searchProperty + "%' "
+		"OR resRoomNum LIKE '%" + searchProperty + "%' "
+		"OR resGuardName LIKE '%" + searchProperty + "%' "
+		"OR resGuardPhone LIKE '%" + searchProperty + "%'";
+	const char* cr = checkResident.c_str();
+	conState = mysql_query(connection, cr);
+
+	system("pause");
+	if (!conState) {
+
+		res = mysql_store_result(connection);
+		int num_fields = mysql_num_fields(res);
+
+		if (num_fields > 0) {
+
+			system("cls");
+			art.logoArt();
+			art.directoryArt("Main Module Menu/ Resident Management Module/Resident Management Menu/Search resident");
+
+			clitable::Table residentTable;
+			clitable::Column c[6] = {
+				clitable::Column("Resident ID",  clitable::Column::CENTER_ALIGN, clitable::Column::CENTER_ALIGN, 1, 8, clitable::Column::NON_RESIZABLE),
+				clitable::Column("Resident IC",  clitable::Column::CENTER_ALIGN, clitable::Column::CENTER_ALIGN, 1, 13, clitable::Column::NON_RESIZABLE),
+				clitable::Column("Resident Name",  clitable::Column::CENTER_ALIGN, clitable::Column::LEFT_ALIGN, 1, 30, clitable::Column::NON_RESIZABLE),
+				clitable::Column("Room Number",  clitable::Column::CENTER_ALIGN, clitable::Column::LEFT_ALIGN, 1, 6, clitable::Column::NON_RESIZABLE),
+				clitable::Column("Guardian Name",  clitable::Column::CENTER_ALIGN, clitable::Column::CENTER_ALIGN, 1, 20, clitable::Column::NON_RESIZABLE),
+				clitable::Column("Guardian Phone",  clitable::Column::CENTER_ALIGN, clitable::Column::CENTER_ALIGN, 1, 14, clitable::Column::NON_RESIZABLE)
+			};
+
+			for(int i = 0; i < 6; i++) { residentTable.addColumn(c[i]); }
+
+			while (row = mysql_fetch_row(res)) {
+
+				vector<string> rowTable;
+				for (int i = 0; i < 6; i++) { rowTable.push_back(row[i] ? row[i] : "NULL"); }
+				string* userData = &rowTable[0];
+				residentTable.addRow(userData);
+			}
+			cout << residentTable.draw() << endl;
+			mysql_free_result(res);
+			
 		}
 		else {
-			switch (option) {
-			case 1:
-				cout << "\nRedirecting you to update resident information page\n";
-				system("pause");
-				updateResident(resID);
-				break;
-			case 2:
-				cout << "\nRedirecting you to remove resident page\n";
-				system("pause");
-				removeResident(resID);
-				break;
-			case 3:
-				cout << "\nRedirecting you back to Resident Management Menu\n";
-				system("pause");
-				residentMenu();
-				break;
-			case 4:
-				cout << "\nRedirecting you to log out page\n";
-				system("pause");
-				if (!auth.logout()) {
-					residentListView();
-				}
+			cout << "\n\x1B[31mResident doesn't exist within such search properties. Please try again\033[0m\n";
+			system("pause");
+			searchGeneralResident();
+		}
+	}
+	else {
+		cout << "\x1B[31m\nQuery error\033[0m\n" << mysql_errno(connection) << endl;
+		exit(0);
+	}
+	
+	do {
+		char option;
+		cout << "\n\x1B[94mDo you found your resident properties?\033[0m\n\n";
+		cout << "Enter your choice (Y/N) : ";
+
+		cin >> option;
+
+		switch (option) {
+		case 'Y':
+		case 'y':
+			break;
+		case 'N':
+		case 'n':
+			cout << "\n\x1B[94mRedirecting you back to search page\033[0m\n";
+			system("pause");
+			searchGeneralResident();
+			break;
+		default:
+			cout << "\x1B[31m\nInvalid input, please try again\033[0m\n" << mysql_errno(connection) << endl;
+			system("pause");
+			searchGeneralResident();
+		}
+		break;
+	} while (true);
+
+	do {
+		string resID;
+		cout << "\nSelect the resident ID that you want to select : ";
+		cin >> resID;
+
+		string checkID = "SELECT * FROM residents WHERE resID = '" + resID + "'";
+		const char* ci = checkID.c_str();
+		conState = mysql_query(connection, ci);
+
+		if (!conState) {
+			res = mysql_store_result(connection);
+			if (mysql_num_rows(res) > 0) {
+				return resID;
 				break;
 			}
+			else {
+				cout << "\n\x1B[31mResident doesn't exist within such search properties. Please try again\033[0m\n";
+				system("pause");
+				searchGeneralResident();
+			}
 		}
+		else {
+			cout << "\x1B[31m\nQuery error\033[0m\n" << mysql_errno(connection) << endl;
+			exit(0);
+		}
+
 	} while (true);
 }
 
@@ -518,7 +699,7 @@ void ResidentMgmntModule::updateResident(string resID){
 		cout << "2 - Update Room Number\n";
 		cout << "3 - Update Guardian Name\n";
 		cout << "4 - Update Guardian Phone Number\n";
-		cout << "5 - Go back to Resident List\n";
+		cout << "5 - Go back to Resident Menu\n";
 		cout << "\nEnter your choice : ";
 		cin >> option;
 
@@ -547,9 +728,9 @@ void ResidentMgmntModule::updateResident(string resID){
 				continueLoop = false;
 				break;
 			case 5 :
-				cout << "\nRedirecting you back to Resident List\n";
+				cout << "\nRedirecting you back to Resident menu\n";
 				system("pause");
-				residentListView();
+				residentMenu();
 				break;
 			}
 		}
@@ -830,9 +1011,9 @@ void ResidentMgmntModule::removeResident(string resID) {
 			case 1:
 				break;
 			case 2:
-				cout << "\nRedirecting you back to Resident List\n";
+				cout << "\nRedirecting you back to Resident menu\n";
 				system("pause");
-				residentListView();
+				residentMenu();
 				break;
 			}
 
@@ -843,9 +1024,9 @@ void ResidentMgmntModule::removeResident(string resID) {
 
 			if (!conState) {
 				cout << "\n\x1B[32mResident successfully removed\033[0m\n";
-				cout << "\x1B[32mRedirecting you back to Resident List\033[0m\n";
+				cout << "\x1B[32mRedirecting you back to Resident menu\033[0m\n";
 				system("pause");
-				residentListView();
+				residentMenu();
 			}
 			else {
 				cout << "\x1B[31m\nQuery error\033[0m\n" << mysql_errno(connection) << endl;
@@ -855,7 +1036,55 @@ void ResidentMgmntModule::removeResident(string resID) {
 	} while (true);
 }
 
-//this function is called after a user select it from residentMenu()
+//this function is called from residentMenu and wil ask what scehdule
+//the user want to view
+void ResidentMgmntModule::scheduleMenu() {
+
+	cout << "\n\x1B[94mPlease select schedule you want to view\033[0m\n\n";
+	cout << "1 - Incomplete Schedule\n";
+	cout << "2 - Complete Schedule\n";
+	cout << "3 - Go back to Resident menu\n\n";
+
+	int option;
+
+	cout << "\nEnter your choice : ";
+	cin >> option;
+
+	if (cin.fail()) {
+		cin.clear();
+		cin.ignore();
+		cout << "\n\x1B[31mInvalid input, please try again\033[0m\n";
+		system("pause");
+		scheduleMenu();
+	}
+	else {
+
+		switch (option) {
+		case 1:
+			cout << "\nRedirecting you to incomplete schedule page\n";
+			system("pause");
+			residentIncompleteSchedule();
+			break;
+		case 2:
+			cout << "\nRedirecting you to complete schedule page\n";
+			system("pause");
+			residentCompleteSchedule();
+			break;
+		case 3:
+			cout << "\nRedirecting you back to Resident menu\n";
+			system("pause");
+			residentMenu();
+			break;
+		default:
+			cout << "\n\x1B[31mInvalid input, please try again\033[0m\n";
+			system("pause");
+			scheduleMenu();
+			break;
+		}
+	}
+}
+
+//this function is called after a user select it from scheduleMenu()
 //get userID and using it to find the resident's schedule that assigned to them
 //if the user have incomplete schedule, it will show the incomplete schedule
 //if user has completed all the schedule, it will show the completed schedule
@@ -887,9 +1116,16 @@ void ResidentMgmntModule::residentIncompleteSchedule(){
 	const char* ss = selectSchedule.c_str();
 	conState = mysql_query(connection, ss);
 	
+	if (verifier.verifyUserAuthorization(conf.getCurrentUserID())) {
+		cout << "\n\x1B[31m\nYou are not authorized to view this page\033[0m\n";
+		cout << "\x1B[31mRedirecting you back to Resident menu\033[0m\n";
+		system("pause");
+		residentMenu();
+	}
+
 	if (!conState) {
 		res = mysql_store_result(connection);
-		if (mysql_num_rows(res) < 0) {
+		if (mysql_num_rows(res) < 1 ){
 			cout << "\n\x1B[33mYou have no incoming schedule for today\033[0m\n";
 			cout << "\x1B[33mRedirecting you to completed today schedule\033[0m\n";
 			system("pause");   

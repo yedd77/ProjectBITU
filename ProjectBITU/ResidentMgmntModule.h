@@ -10,13 +10,16 @@ class ResidentMgmntModule {
 public:
 	void residentMenu();
 	void residentRegistration();
-	void residentListView();
+	string residentListView();
 	void updateResident(string resID);
 	void updateResidentName(string resID);
 	void updateResidentRoomNum(string resID);
 	void updateGuardianName(string resID);
 	void updateGuardianContact(string resID);
 	void removeResident(string resID);
+	void selectNextActionRes(string resID);
+	string searchGeneralResident();
+	void scheduleMenu();
 	void residentIncompleteSchedule();
 	void residentCompleteSchedule();
 	void updateSchedule(string sceheduleID); //background process
