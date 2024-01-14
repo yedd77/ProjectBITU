@@ -191,7 +191,7 @@ void  Auth::hasPassChanged(string* userData) {
 
 		//user havent change the default password
 		cout << "\x1B[33mYou haven't change your password\033[0m\n\n";
-		cout << "\x1B[94mPlease change you password to access the system\033[0m\n";
+		cout << "\x1B[96mPlease change you password to access the system\033[0m\n";
 		char ch;
 		string password;
 

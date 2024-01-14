@@ -21,7 +21,7 @@ void MedMgmntSub::MedsMgmntMenu() {
 	art.logoArt();
 	art.directoryArt("MSMM/Meds Management sub-module");
 
-	cout << "\x1B[94mPlease select your next action\033[0m\n\n";
+	cout << "\x1B[96mPlease select your next action\033[0m\n\n";
 
 	cout << "1 - Register new medicine\n";
 	cout << "2 - Update existing medicine\n";
@@ -101,7 +101,7 @@ void MedMgmntSub::MedsMgmntAdd() {
 	int isSedative;
 
 	cout << "You are about to add new medicines, to avoid redundancy of data please provide the new medicine's name\n";
-	cout << "\x1B[94mPlease enter the medicine's name exactly as the packaging\033[0m\n\n";
+	cout << "\x1B[96mPlease enter the medicine's name exactly as the packaging\033[0m\n\n";
 
 	//meds name
 	cout << "Enter new medicine's name : ";
@@ -118,7 +118,7 @@ void MedMgmntSub::MedsMgmntAdd() {
 	}
 
 	cout << "Medicine did not exist in database\n";
-	cout << "\n\x1B[94mPlease provide more information\n\033[0m\n";
+	cout << "\n\x1B[96mPlease provide more information\n\033[0m\n";
 
 	//meds ID
 	//retrieve last record on DB
@@ -182,7 +182,7 @@ void MedMgmntSub::MedsMgmntAdd() {
 
 
 	//meds description 
-	cout << "\n\x1B[94mMedication description include what is the purpose of the medication\n\033[0m";
+	cout << "\n\x1B[96mMedication description include what is the purpose of the medication\n\033[0m";
 	cout << "Enter medicine's description : ";
 	cin.clear();
 	cin.ignore(INT_MAX, '\n');
@@ -193,7 +193,7 @@ void MedMgmntSub::MedsMgmntAdd() {
 
 		float dosage;
 
-		cout << "\n\x1B[94mPlease enter the medication's dosage per serving in miligram (mg)\033[0m";
+		cout << "\n\x1B[96mPlease enter the medication's dosage per serving in miligram (mg)\033[0m";
 		cout << "\nEnter medicine's dosage : ";
 		if (!(cin >> dosage)) {
 			dosage = 0;
@@ -212,7 +212,7 @@ void MedMgmntSub::MedsMgmntAdd() {
 	//meds price
 	do {
 		double price = 0;
-		cout << "\n\x1B[94mPlease enter medication price\033[0m";
+		cout << "\n\x1B[96mPlease enter medication price\033[0m";
 		cout << "\nEnter medicine's price (RM) : ";
 
 		if (!(cin >> price)) {
@@ -232,7 +232,7 @@ void MedMgmntSub::MedsMgmntAdd() {
 	//meds sedative
 	int option = 0;
 	do {
-		cout << "\n\x1B[94mIs the medicine a sedative?\033[0m\n\n";
+		cout << "\n\x1B[96mIs the medicine a sedative?\033[0m\n\n";
 		cout << "1 - Yes\n";
 		cout << "2 - No\n";
 
@@ -254,7 +254,7 @@ void MedMgmntSub::MedsMgmntAdd() {
 		}
 	} while (option == 0);
 
-	cout << "\n\x1B[94mPlease enter medication brand\033[0m";
+	cout << "\n\x1B[96mPlease enter medication brand\033[0m";
 	cout << "\nMedication's Brand : ";
 	cin >> medsBrand;
 
@@ -449,7 +449,7 @@ void MedMgmntSub::medsUpdate(string* medsData) {
 		cout << "\n\x1B[96mIf there are significant changes to these aspects, please remove the medication\033[0m";
 		cout << "\n\x1B[96mand add it again with the correct details.\033[0m\n\n";
 
-		cout << "\n\x1B[94mSelect Column you want to edit\033[0m\n\n";
+		cout << "\n\x1B[96mSelect Column you want to edit\033[0m\n\n";
 		cout << "1 - Meds Price\n";
 		cout << "2 - Meds Description\n";
 		cout << "3 - Return to medicine management menu\n";
@@ -487,7 +487,7 @@ void MedMgmntSub::medsUpdatePrice(string* medsData) {
 	//meds price
 	do {
 		cout << "\n\nCurrent medicine's price : RM " << medsData[4] << endl;
-		cout << "\n\x1B[94mPlease enter new medication price\033[0m";
+		cout << "\n\x1B[96mPlease enter new medication price\033[0m";
 		cout << "\nEnter medicine's price (RM) : ";
 
 		if (!(cin >> price)) {
@@ -520,7 +520,7 @@ void MedMgmntSub::medsUpdateDesc(string* medsData) {
 	string medDesc;
 
 	cout << "\n\nCurrent medicine's description : " << medsData[5] << endl;
-	cout << "\n\x1B[94mPlease enter medication description\033[0m";
+	cout << "\n\x1B[96mPlease enter medication description\033[0m";
 	cout << "\nEnter medicine's description : ";
 	cin.clear();
 	cin.ignore(INT_MAX, '\n');
@@ -634,7 +634,7 @@ void MedMgmntSub::medsNextAction(string* medsData){
 
 	int choice = 0;
 
-	cout << "\n\x1B[94mPlease select your next action\033[0m\n\n";
+	cout << "\n\x1B[96mPlease select your next action\033[0m\n\n";
 	cout << "1 - Update medicine\n";
 	cout << "2 - Remove medicine\n";
 	cout << "3 - Go back to medicine menu\n\n";
@@ -676,7 +676,7 @@ void MedMgmntSub::medsGeneralSearch(){
 
 	string searchProperty;
 
-	cout << "\n\x1B[94mYou can search meds from the database via their medsID, name, description and brand\033[0m\n\n";
+	cout << "\n\x1B[96mYou can search meds from the database via their medsID, name, description and brand\033[0m\n\n";
 	cout << "Enter your medicine properties : ";
 	cin >> searchProperty;
 
@@ -736,7 +736,7 @@ void MedMgmntSub::medsGeneralSearch(){
 	
 	do {
 		char option;
-		cout << "\n\x1B[94mDo you found your medicine properties?\033[0m\n\n";
+		cout << "\n\x1B[96mDo you found your medicine properties?\033[0m\n\n";
 		cout << "Enter your choice (Y/N) : ";
 		cin >> option;
 
@@ -746,7 +746,7 @@ void MedMgmntSub::medsGeneralSearch(){
 			break;
 		case'n':
 		case 'N':
-			cout << "\n\x1B[94mRedirecting you back to search page\033[0m\n";
+			cout << "\n\x1B[96mRedirecting you back to search page\033[0m\n";
 			system("pause");
 			medsGeneralSearch();
 			break;

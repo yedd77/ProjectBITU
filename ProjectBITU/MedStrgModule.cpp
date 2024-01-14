@@ -30,7 +30,7 @@ void MedStrgModule::nurseModuleMenu(){
 	art.logoArt();
 	art.directoryArt("Medicines Storage Management Module (MSMM)");
 
-	cout << "\x1B[94mSelect the sub-module you want to access\033[0m\n\n";
+	cout << "\x1B[96mSelect the sub-module you want to access\033[0m\n\n";
 
 	cout << "1 - Medicines Management sub-module\n";
 	cout << "2 - Storage Management sub-module\n";

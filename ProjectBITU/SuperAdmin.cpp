@@ -6,6 +6,7 @@
 #include "MedStrgModule.h"
 #include "staffMngmtModule.h"
 #include "ResidentMgmntModule.h"
+#include "DailyReportingSub.h"
 
 using namespace std;
 
@@ -14,6 +15,7 @@ extern Auth auth;
 StaffMngmtModule staffModule;
 MedStrgModule meds;
 ResidentMgmntModule resident;
+DailyReportingSub dailyReport;
 
 void SuperAdmin::superAdminMenu() {
 
@@ -21,7 +23,7 @@ void SuperAdmin::superAdminMenu() {
 	art.logoArt();
 	art.directoryArt("Main Module Menu");
 
-	cout << "\x1B[94mSelect the module you want to access\033[0m\n\n";
+	cout << "\x1B[96mSelect the module you want to access\033[0m\n\n";
 
 	cout << "1 - Meds Storage Management Module (MSMM)\n";
 	cout << "2 - Resident Management Module (RMM)\n";
@@ -61,7 +63,7 @@ void SuperAdmin::superAdminMenu() {
 		case 4:
 			cout << "\nRedirecting you to Daily Reporter Module\n";
 			system("pause");
-			//TODO: Add Daily Reporter Module
+			dailyReport.dailyReportMenu();
 			break;
 		case 5:
 			system("pause");

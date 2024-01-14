@@ -20,10 +20,8 @@ void DailyUpdater::controller(){
 	system("cls");
 	art.logoArt();
 
-	//call function to update schedule
-	ScheduleUpdater();
-	//call function to update batch
-	batchUpdater();
+	checkWillExpire();
+	checkHasLowStock();
 
 	//display all message
 	clitable::Table messageTable;
@@ -47,124 +45,111 @@ void DailyUpdater::controller(){
 
 }
 
-//this function going to select all the schedule where their date have passed
+//this function going to select all the batch where their date of expiry almost passed
 //and remove it from database
-void DailyUpdater::ScheduleUpdater(){
+void DailyUpdater::checkWillExpire(){
 
-	//define query
-	string selectSchedule = "SELECT * FROM schedules WHERE date < CURDATE()";
-	const char* ss = selectSchedule.c_str();
-	conState = mysql_query(connection, ss);
+	do {
+		//check if there is a batch that will passed their date of expiry in less than 20 days
+		string checkWillExpire = "SELECT "
+			"COUNT(*) AS batchCount "
+			"FROM "
+			"batches B "
+			"JOIN "
+			"medicines M ON B.medsID = M.medsID "
+			"WHERE "
+			"B.batchExpiry < CURRENT_DATE + INTERVAL 20 DAY ";
+		const char* cwe = checkWillExpire.c_str();
+		conState = mysql_query(connection, cwe);
 
-	if (!conState) {
-		res = mysql_store_result(connection);
+		if (!conState) {
+			res = mysql_store_result(connection);
+			row = mysql_fetch_row(res);
 
-		if (mysql_num_rows(res) > 0) {
-
-			int fieldCount = 0;
-			while (row = mysql_fetch_row(res)) {
-
-				//define query for deletion
-				string deleteSchedule = "DELETE FROM schedules WHERE scheduleID = '" + string(row[0])+ "' ";
-				const char* ds = deleteSchedule.c_str();
-				conState = mysql_query(connection, ds);
-
-				if (conState) {
-					cout << "\x1B[31mQuery error\033[0m\n" << mysql_errno(connection) << endl;
-					exit(0);
-				}
-
-				fieldCount++;
+			if (atoi(row[0]) < 0) {
+				message.push_back("No medication batches with past date expiry in 20 days from now");
+				break;
 			}
-			message.push_back(to_string(fieldCount) + " medication(s) schedule has been adjusted");
 		}
 		else {
-			message.push_back("No update for medication schedule");
+			cout << "\x1B[31mQuery error\033[0m\n" << mysql_errno(connection) << endl;
+			exit(0);
 		}
-	}
-	else {
-		cout << "\x1B[31mQuery error\033[0m\n" << mysql_errno(connection)  << endl;
-		exit(0);
-	}
+
+		//define query where their date of expiry have will passed in less than 20 days
+		string selectBatch = "SELECT B.batchID, B.medsID, M.medsName, B.batchQuantity, "
+			"DATEDIFF(B.batchExpiry, CURRENT_DATE) AS daysUntilExpiry "
+			"FROM batches B "
+			"JOIN medicines M ON B.medsID = M.medsID "
+			"WHERE DATEDIFF(B.batchExpiry, CURRENT_DATE) >= 0 AND DATEDIFF(B.batchExpiry, CURRENT_DATE) <= 20 ";
+		const char* sb = selectBatch.c_str();
+		conState = mysql_query(connection, sb);
+
+		if (!conState) {
+			res = mysql_store_result(connection);
+			while (row = mysql_fetch_row(res)) {
+				message.push_back(string(row[0]) + " -  " + string(row[2]) + " with medsID of " + string(row[1]) + " will expire in " + string(row[4]) + " day(s)");
+			}
+
+			break;
+		}
+		else {
+			cout << "\x1B[31mQuery error\033[0m\n" << mysql_errno(connection) << endl;
+			exit(0);
+		}
+	}while(true);
 }
 
-//this function going to select all the batch where their date of expiry have passed
-//and remove it from database
-void DailyUpdater::batchUpdater(){
+//this function going to check if there's any batch that low in stocks less than 30
+void DailyUpdater::checkHasLowStock(){
 
-	//define query where their date of expiry have passed
-	string selectBatch = "SELECT B.batchID, B.medsID, M.medsName, B.batchQuantity "
-		"FROM batches B "
-		"JOIN medicines M ON B.medsID = M.medsID "
-		"WHERE B.batchExpiry < CURRENT_DATE ";
-	const char* sb = selectBatch.c_str();
-	conState = mysql_query(connection, sb);
+	do {
+		//check if theres any batch that have low stock
+		string countBatchLow = "SELECT COUNT(B.batchID) AS NumberOfBatches "
+			"FROM Batches B "
+			"JOIN Medicines M ON B.medsID = M.medsID "
+			"WHERE B.batchQuantity <= 30 ";
+		const char* cbl = countBatchLow.c_str();
+		conState = mysql_query(connection, cbl);
 
-	if (!conState) {
-		res = mysql_store_result(connection);
+		if (!conState) {
+			res = mysql_store_result(connection);
+			row = mysql_fetch_row(res);
 
-		if (mysql_num_rows(res) > 0) {
-
-			while (row = mysql_fetch_row(res)) {
-
-				message.push_back(string(row[0]) + " - " + string(row[3]) + " " + string(row[2]) + " with medsID of " + string(row[1]) + " has expired and removed");
-
-				//define query for deletion
-				string deleteBatch = "DELETE FROM batches WHERE batchID = '" + string(row[0])+ "' ";
-				const char* db = deleteBatch.c_str();
-				conState = mysql_query(connection, db);
-
-				if (conState) {
-					cout << "\x1B[31mQuery error\033[0m\n" << mysql_errno(connection) << endl;
-					exit(0);
-				}
-			}
-
-		}
-		else {
-			message.push_back("No medication batches with past date expiry");
-		}
-	}
-	else {
-		cout << "\x1B[31mQuery error\033[0m\n" << mysql_errno(connection) << endl;
-		exit(0);
-	}
-
-	//define query where stock is 0
-	string selectBatchQty = "SELECT B.batchID, B.medsID, M.medsName, B.batchQuantity "
-		"FROM Batches B "
-		"JOIN Medicines M ON B.medsID = M.medsID "
-		"WHERE B.batchQuantity <= 0 ";
-	const char* sbq = selectBatchQty.c_str();
-	conState = mysql_query(connection, sbq);
-
-	if (!conState) {
-		res = mysql_store_result(connection);
-
-		if (mysql_num_rows(res) > 0) {
-
-			while (row = mysql_fetch_row(res)) {
-
-				message.push_back(string(row[0]) + " - " + string(row[3]) + " " + string(row[2]) + " with medsID of " + string(row[1]) + " didn't have stocks and removed");
-
-				//define query for deletion
-				string deleteBatchqty = "DELETE FROM batches WHERE batchID = '" + string(row[0])+ "' ";
-				const char* dbq = deleteBatchqty.c_str();
-				conState = mysql_query(connection, dbq);
-
-				if(conState){
-					cout << "\x1B[31mQuery error\033[0m\n" << mysql_errno(connection) << endl;
-					exit(0);
-				}
+			if (atoi(row[0]) < 0) {
+				message.push_back("No medication batches with low stock");
+				break;
 			}
 		}
 		else {
-			message.push_back("No medication batches that zero in stocks");
+			cout << "\x1B[31mQuery error\033[0m\n" << mysql_errno(connection) << endl;
+			cout << "4" << endl;
+			exit(0);
 		}
-	}
-	else {
-		cout << "\x1B[31mQuery error\033[0m\n" << mysql_errno(connection) << endl;
-		cout << 6 << endl;
-		exit(0);
-	}
+
+		//select all the batch that have low stock less than 30
+		string selectBatchLow = "SELECT B.batchID, B.medsID, M.medsName, B.batchQuantity "
+			"FROM Batches B "
+			"JOIN Medicines M ON B.medsID = M.medsID "
+			"WHERE B.batchQuantity <= 30 ";
+		const char* sbl = selectBatchLow.c_str();
+		conState = mysql_query(connection, sbl);
+		
+		if (!conState) {
+
+			res = mysql_store_result(connection);
+			while (row = mysql_fetch_row(res)) {
+				message.push_back(string(row[0]) + " -  " + string(row[2]) + " with medsID of " + string(row[1]) + " has currently low in stock [ " + string(row[3])+ " ]");
+			}
+			break;
+		}
+		else {
+			cout << "\x1B[31mQuery error\033[0m\n" << mysql_errno(connection) << endl;
+			cout << "5" << endl;
+			exit(0);
+		}
+	} while (true);
 }
+
+
+

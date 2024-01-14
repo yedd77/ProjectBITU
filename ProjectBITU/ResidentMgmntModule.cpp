@@ -26,7 +26,7 @@ void ResidentMgmntModule::residentMenu() {
 	art.logoArt();
 	art.directoryArt("Main Module Menu/ Resident Management Module/Resident Management Menu");
 
-	cout << "\x1B[94mPlease select your next action\033[0m\n\n";
+	cout << "\x1B[96mPlease select your next action\033[0m\n\n";
 
 	cout << "1 - Register New Resident\n";
 	cout << "2 - Update exsitng resident\n";
@@ -112,8 +112,8 @@ void ResidentMgmntModule::residentRegistration(){
 
 	string resID, staffID, resIC, resName, resRoomNum, resGuardName, resGuardPhone;
 
-	cout << "\x1B[94mYou are about to register new resident, to avoid redundancy of user please provide the new resident IC\033[0m\n";
-	cout << "\x1B[94mPlease enter the IC number without '-' and using this format (010203040606)\033[0m\n\n";
+	cout << "\x1B[96mYou are about to register new resident, to avoid redundancy of user please provide the new resident IC\033[0m\n";
+	cout << "\x1B[96mPlease enter the IC number without '-' and using this format (010203040606)\033[0m\n\n";
 
 	//keep looping until user enter a valid IC number
 	do {
@@ -144,7 +144,7 @@ void ResidentMgmntModule::residentRegistration(){
 	}
 
 	cout << "User did not exist in the database\n";
-	cout << "\n\x1B[94mPlease provide more information\n\033[0m\n";
+	cout << "\n\x1B[96mPlease provide more information\n\033[0m\n";
 
 	//resident name instance
 	do {
@@ -189,7 +189,7 @@ void ResidentMgmntModule::residentRegistration(){
 
 	//resident room number instance
 	do {
-		cout << "\x1B[94m\nPlease enter resident's room number as in this format Block-Floor-Room Number (A-1-7)\033[0m\n";
+		cout << "\x1B[96m\nPlease enter resident's room number as in this format Block-Floor-Room Number (A-1-7)\033[0m\n";
 		cout << "Enter resident's room number : ";
 		cin >> resRoomNum;
 
@@ -318,7 +318,7 @@ void ResidentMgmntModule::residentRegistration(){
 
 	//check if the staff exist in the database
 	do {
-		cout << "\x1B[94mPlease enter the staff ID that you want to assign to this resident\033[0m\n\n";
+		cout << "\x1B[96mPlease enter the staff ID that you want to assign to this resident\033[0m\n\n";
 		cout << "Enter staff ID : ";
 		cin >> staffID;
 
@@ -412,7 +412,7 @@ string ResidentMgmntModule::residentListView(){
 
 	string resID;
 	do {
-		cout << "\n\x1B[94mPlease select the resident you want to select\033[0m\n";
+		cout << "\n\x1B[96mPlease select the resident you want to select\033[0m\n";
 		cout << "Enter resident ID : ";
 		cin >> resID;
 		cin.clear();
@@ -447,7 +447,7 @@ void ResidentMgmntModule::selectNextActionRes(string resID) {
 
 	int option = 0;
 
-	cout << "\n\x1B[94mPlease select your next action\033[0m\n\n";
+	cout << "\n\x1B[96mPlease select your next action\033[0m\n\n";
 	cout << "1 - Update Resident\n";
 	cout << "2 - Delete Resident\n";
 	cout << "3 - Go back to Resident menu\n\n";
@@ -533,7 +533,7 @@ string ResidentMgmntModule::searchGeneralResident(){
 
 	string searchProperty;
 
-	cout << "\n\x1B[94mYou can search resident from the database via their ID, name, IC number or room number\033[0m\n\n";
+	cout << "\n\x1B[96mYou can search resident from the database via their ID, name, IC number or room number\033[0m\n\n";
 	cout << "Enter the resident property to search for : ";
 	cin >> searchProperty;
 
@@ -597,7 +597,7 @@ string ResidentMgmntModule::searchGeneralResident(){
 	
 	do {
 		char option;
-		cout << "\n\x1B[94mDo you found your resident properties?\033[0m\n\n";
+		cout << "\n\x1B[96mDo you found your resident properties?\033[0m\n\n";
 		cout << "Enter your choice (Y/N) : ";
 
 		cin >> option;
@@ -608,7 +608,7 @@ string ResidentMgmntModule::searchGeneralResident(){
 			break;
 		case 'N':
 		case 'n':
-			cout << "\n\x1B[94mRedirecting you back to search page\033[0m\n";
+			cout << "\n\x1B[96mRedirecting you back to search page\033[0m\n";
 			system("pause");
 			searchGeneralResident();
 			break;
@@ -694,7 +694,7 @@ void ResidentMgmntModule::updateResident(string resID){
 	boolean continueLoop = true;
 	do {
 		int option;
-		cout << "\n\x1B[94mPlease select your next action\033[0m\n\n";
+		cout << "\n\x1B[96mPlease select your next action\033[0m\n\n";
 		cout << "1 - Update Resident Name\n";
 		cout << "2 - Update Room Number\n";
 		cout << "3 - Update Guardian Name\n";
@@ -760,7 +760,7 @@ void ResidentMgmntModule::updateResidentName(string resID){
 
 	do {
 		cout << "\n\nCurrent resident name : " << resName;
-		cout << "\n\n\x1B[94mPlease enter the new resident name\033[0m\n";
+		cout << "\n\n\x1B[96mPlease enter the new resident name\033[0m\n";
 		cout << "Enter new resident name : ";
 		cin.ignore();
 		getline(cin, resName);
@@ -816,7 +816,7 @@ void ResidentMgmntModule::updateResidentRoomNum(string resID){
 
 	do {
 		cout << "\n\nCurrent resident room number : " << resRoomNum;
-		cout << "\n\n\x1B[94m\nPlease enter resident's room number as in this format Block-Floor-Room Number (A-1-7)\033[0m\n";
+		cout << "\n\n\x1B[96m\nPlease enter resident's room number as in this format Block-Floor-Room Number (A-1-7)\033[0m\n";
 		cout << "Enter resident's room number : ";
 		cin >> resRoomNum;
 
@@ -891,7 +891,7 @@ void ResidentMgmntModule::updateGuardianName(string resID){
 
 	do {
 		cout << "\n\nCurrent resident guardian name : " << resGuardName;
-		cout << "\n\n\x1B[94mPlease enter the new resident guardian name\033[0m\n";
+		cout << "\n\n\x1B[96mPlease enter the new resident guardian name\033[0m\n";
 		cout << "Enter new resident guardian name : ";
 		cin.ignore();
 		getline(cin, resGuardName);
@@ -947,7 +947,7 @@ void ResidentMgmntModule::updateGuardianContact(string resID){
 
 	do {
 		cout << "\n\nCurrent resident guardian phone number : " << resGuardPhone;
-		cout << "\n\n\x1B[94mPlease enter the new resident guardian phone number\033[0m\n";
+		cout << "\n\n\x1B[96mPlease enter the new resident guardian phone number\033[0m\n";
 		cout << "Enter new resident guardian phone number : ";
 		cin >> resGuardPhone;
 
@@ -991,7 +991,7 @@ void ResidentMgmntModule::removeResident(string resID) {
 	//confrimation
 	do {
 
-		cout << "\n\x1B[94mAre you sure you want to remove this resident?\033[0m\n";
+		cout << "\n\x1B[96mAre you sure you want to remove this resident?\033[0m\n";
 		cout << "1 - Yes\n";
 		cout << "2 - No\n";
 		cout << "Enter your choice : ";
@@ -1040,7 +1040,7 @@ void ResidentMgmntModule::removeResident(string resID) {
 //the user want to view
 void ResidentMgmntModule::scheduleMenu() {
 
-	cout << "\n\x1B[94mPlease select schedule you want to view\033[0m\n\n";
+	cout << "\n\x1B[96mPlease select schedule you want to view\033[0m\n\n";
 	cout << "1 - Incomplete Schedule\n";
 	cout << "2 - Complete Schedule\n";
 	cout << "3 - Go back to Resident menu\n\n";
@@ -1162,7 +1162,7 @@ void ResidentMgmntModule::residentIncompleteSchedule(){
 	string scheduleID;
 	do {
 
-		cout << "\x1B[94mPlease enter the scheduleID of the prescription you have gave\033[0m\n\n";
+		cout << "\x1B[96mPlease enter the scheduleID of the prescription you have gave\033[0m\n\n";
 		cout << "Enter schedule ID : ";
 		cin >> scheduleID;
 
@@ -1251,8 +1251,8 @@ void ResidentMgmntModule::residentIncompleteSchedule(){
 
 	do {
 		char confirm;
-		cout << "\n\x1B[94mYou are about to record this schedule as given\033[0m\n";
-		cout << "\n\x1B[94mHave you gave the medicines to the resident?\033[0m\n";
+		cout << "\n\x1B[96mYou are about to record this schedule as given\033[0m\n";
+		cout << "\n\x1B[96mHave you gave the medicines to the resident?\033[0m\n";
 		cout << "Enter Y to confirm or N to cancel : ";
 		cin >> confirm;
 
@@ -1337,7 +1337,7 @@ void ResidentMgmntModule::residentCompleteSchedule(){
 	}
 
 	do {
-		cout << "\n\x1B[94mPlease select your next action\033[0m\n\n";
+		cout << "\n\x1B[96mPlease select your next action\033[0m\n\n";
 		cout << "1 - Go back to Resident Management Menu\n";
 		cout << "Enter your choice : ";
 

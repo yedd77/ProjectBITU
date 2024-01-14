@@ -5,7 +5,7 @@ class DailyUpdater{
 public:
 	
 	void controller();
-	void ScheduleUpdater();
-	void batchUpdater();
+	void checkWillExpire();
+	void checkHasLowStock();
 };
 #endif // !DAILYUPDATER_H

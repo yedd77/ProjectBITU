@@ -83,7 +83,7 @@ int main() {
 	if (!auth.firstTimeSetup()) {
 		cout << "Program error, please try again\n\n";
 		exit(0);
-	}
+	}	
 	scheduler.checkSchedule();
 	dailyUpdater.controller();
 	system("pause");

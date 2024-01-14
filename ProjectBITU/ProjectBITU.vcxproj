@@ -132,6 +132,7 @@
   <ItemGroup>
     <ClCompile Include="artwork.cpp" />
     <ClCompile Include="Auth.cpp" />
+    <ClCompile Include="DailyReportingSub.cpp" />
     <ClCompile Include="dailyUpdater.cpp" />
     <ClCompile Include="MedMgmntSub.cpp" />
     <ClCompile Include="MedStrgModule.cpp" />
@@ -146,6 +147,7 @@
     <ClInclude Include="Artwork.h" />
     <ClInclude Include="Auth.h" />
     <ClInclude Include="config.h" />
+    <ClInclude Include="DailyReportingSub.h" />
     <ClInclude Include="dailyUpdater.h" />
     <ClInclude Include="MedMgmntSub.h" />
     <ClInclude Include="MedStrgModule.h" />

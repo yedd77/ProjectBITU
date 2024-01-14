@@ -22,7 +22,7 @@ void PreMgmntSubModule::preMgmntMenu() {
 	art.logoArt();
 	art.directoryArt("MSMM/Prescription Management sub-module");
 
-	cout << "\x1B[94mPlease select your next action\033[0m\n\n";
+	cout << "\x1B[96mPlease select your next action\033[0m\n\n";
 
 	cout << "1 - Add new prescription\n";
 	cout << "2 - Remove prescription\n";
@@ -70,8 +70,8 @@ void PreMgmntSubModule::addPrescription() {
 	//confimation
 	do {
 		char confirm;
-		cout << "\n\x1B[94mYou are about to create new prescription\033[0m\n";
-		cout << "\x1B[94mDo you want to proceed this action?\033[0m\n";
+		cout << "\n\x1B[96mYou are about to create new prescription\033[0m\n";
+		cout << "\x1B[96mDo you want to proceed this action?\033[0m\n";
 		cout << "\nEnter your choice (Y/N) : ";
 		cin >> confirm;
 
@@ -130,7 +130,7 @@ void PreMgmntSubModule::addPrescription() {
 	cout << residentTable.draw() << endl;
 
 	do {
-		cout << "\n\x1B[94mPlease select the resident you want to prescribe\033[0m\n";
+		cout << "\n\x1B[96mPlease select the resident you want to prescribe\033[0m\n";
 		cout << "Enter resident ID : ";
 		cin >> resID;
 		cin.clear();
@@ -202,7 +202,7 @@ void PreMgmntSubModule::addPrescription() {
 	cout << medicineTable.draw() << endl;
 
 	do {
-		cout << "\n\x1B[94mPlease select the medicine you want to prescribe\033[0m\n";
+		cout << "\n\x1B[96mPlease select the medicine you want to prescribe\033[0m\n";
 		cout << "Enter medicines ID : ";
 		cin >> medID;
 		cin.clear();
@@ -234,7 +234,7 @@ void PreMgmntSubModule::addPrescription() {
 
 	//presciption quantity
 	do {
-		cout << "\n\x1B[94mPlease enter the quantity of medicine each presciption\033[0m\n";
+		cout << "\n\x1B[96mPlease enter the quantity of medicine each presciption\033[0m\n";
 		cout << "Enter quantity : ";
 		cin >> quantity;
 		cin.clear();
@@ -251,7 +251,7 @@ void PreMgmntSubModule::addPrescription() {
 
 	//prescription time per day
 	do {
-		cout << "\n\x1B[94mPlease specify the number of times per day the medication should be taken\033[0m\n";
+		cout << "\n\x1B[96mPlease specify the number of times per day the medication should be taken\033[0m\n";
 		cout << "Enter times per day : ";
 		cin >> timePerDay;
 		cin.clear();
@@ -272,7 +272,7 @@ void PreMgmntSubModule::addPrescription() {
 	} while (true);
 
 	//prescription instruction
-	cout << "\n\x1B[94mPlease enter specific instruction for this prescription\033[0m\n";
+	cout << "\n\x1B[96mPlease enter specific instruction for this prescription\033[0m\n";
 	cout << "Enter instruction : ";
 	getline(cin, instruction);
 
@@ -344,8 +344,8 @@ void PreMgmntSubModule::removePrescription(){
 	//Confirmation
 	do {
 		char confirm;
-		cout << "\n\x1B[94mYou are about to remove prescription\033[0m\n";
-		cout << "\x1B[94mDo you want to proceed this action?\033[0m\n";
+		cout << "\n\x1B[96mYou are about to remove prescription\033[0m\n";
+		cout << "\x1B[96mDo you want to proceed this action?\033[0m\n";
 		cout << "\nEnter your choice (Y/N) : ";
 		cin >> confirm;
 		
@@ -387,8 +387,8 @@ void PreMgmntSubModule::removePrescription(string resID, string preID){
 	//Confirmation
 	do {
 		char confirm;
-		cout << "\n\x1B[94mYou are about to remove prescription\033[0m\n";
-		cout << "\x1B[94mDo you want to proceed this action?\033[0m\n";
+		cout << "\n\x1B[96mYou are about to remove prescription\033[0m\n";
+		cout << "\x1B[96mDo you want to proceed this action?\033[0m\n";
 		cout << "\nEnter your choice (Y/N) : ";
 		cin >> confirm;
 
@@ -462,7 +462,7 @@ string PreMgmntSubModule::getResidentID(string resID){
 	cout << residentTable.draw() << endl;
 
 	do {
-		cout << "\n\x1B[94mPlease select the resident you want to prescribe\033[0m\n";
+		cout << "\n\x1B[96mPlease select the resident you want to prescribe\033[0m\n";
 		cout << "Enter resident ID : ";
 		cin >> resID;
 		cin.clear();
@@ -552,7 +552,7 @@ string PreMgmntSubModule::getPrescriptionID(string action, string resID){
 	cout << prescriptionTable.draw() << endl;
 
 	do {
-		cout << "\n\x1B[94mPlease select the prescription you want " +action+ "\033[0m\n";
+		cout << "\n\x1B[96mPlease select the prescription you want " +action+ "\033[0m\n";
 		cout << "Enter prescription ID : ";
 		cin >> preID;
 		cin.clear();
@@ -610,7 +610,7 @@ void PreMgmntSubModule::viewPrescription(){
 	do {
 		char option;
 		//prompt user for next action
-		cout << "\n\x1B[94mPlease select your next action\033[0m\n\n";
+		cout << "\n\x1B[96mPlease select your next action\033[0m\n\n";
 
 		cout << "1 - Remove prescription\n";
 		cout << "2 - Go back to previous menu\n";

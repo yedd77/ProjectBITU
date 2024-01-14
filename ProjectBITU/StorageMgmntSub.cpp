@@ -20,7 +20,7 @@ void StorageMgmntSub::StorageMgmntMenu() {
 	art.logoArt();
 	art.directoryArt("MSMM/Storage Management sub-module");
 
-	cout << "\x1B[94mPlease select your next action\033[0m\n\n";
+	cout << "\x1B[96mPlease select your next action\033[0m\n\n";
 
 	cout << "1 - Add new batch of medicine\n"; 
 	cout << "2 - Update medicine's batches\n";
@@ -415,8 +415,8 @@ void StorageMgmntSub::batchMgmntAdd(string medsID) {
 
 	do {
 		char confirm;
-		cout << "\n\x1B[94mYou are about to add new batch of stocks of this medicines.\033[0m\n";
-		cout << "\x1B[94mDo you want to proceed this action?\033[0m\n";
+		cout << "\n\x1B[96mYou are about to add new batch of stocks of this medicines.\033[0m\n";
+		cout << "\x1B[96mDo you want to proceed this action?\033[0m\n";
 		cout << "\nEnter your choice (Y/N) : ";
 		cin >> confirm;
 
@@ -474,7 +474,7 @@ void StorageMgmntSub::batchMgmntAdd(string medsID) {
 	//batchQty instance
 	do {
 		string qty;
-		cout << "\n\x1B[94mPlease enter quantity of stock of this batch\033[0m";
+		cout << "\n\x1B[96mPlease enter quantity of stock of this batch\033[0m";
 		cout << "\nEnter batch quantity : ";
 		cin >> qty;
 
@@ -492,7 +492,7 @@ void StorageMgmntSub::batchMgmntAdd(string medsID) {
 
 	//Expiry date instance
 	do {
-		cout << "\n\x1B[94mPlease enter batch expiry date using this format YYYY-MM-DD ex: 2029-12-01\033[0m";
+		cout << "\n\x1B[96mPlease enter batch expiry date using this format YYYY-MM-DD ex: 2029-12-01\033[0m";
 		cout << "\nEnter batch expiry date : ";
 		cin >> batchExpDate;
 
@@ -786,9 +786,9 @@ void StorageMgmntSub::StorageMgmntUpdateBatches(string ID) {
 		mysql_free_result(res);
 
 		int option = 0;
-		cout << "\n\x1B[94mYou're about to modify the information of this batches.\033[0m";
-		cout << "\n\x1B[94mPlease make sure the information you provide matches the inventory in stocks\033[0m";
-		cout << "\n\x1B[94mPlease select the information that you want to update\033[0m\n\n";
+		cout << "\n\x1B[96mYou're about to modify the information of this batches.\033[0m";
+		cout << "\n\x1B[96mPlease make sure the information you provide matches the inventory in stocks\033[0m";
+		cout << "\n\x1B[96mPlease select the information that you want to update\033[0m\n\n";
 
 		cout << "1 - Batch Quantity\n";
 		cout << "2 - Batch Date Expiry\n";
@@ -833,7 +833,7 @@ void StorageMgmntSub::StorageMgmntUpdateBatchesQuantity(string ID, string oldQty
 
 	do {
 		cout << "\n\nCurrent batch quantity " << oldQty;
-		cout << "\n\x1B[94mPlease enter batch expiry date using this format YYYY-MM-DD ex: 2029-12-01\033[0m";
+		cout << "\n\x1B[96mPlease enter batch expiry date using this format YYYY-MM-DD ex: 2029-12-01\033[0m";
 		cout << "\nEnter new quantity : ";
 		cin >> newQuantity;
 
@@ -871,7 +871,7 @@ void StorageMgmntSub::StorageMgmntUpdateBatchesExpiry(string ID, string oldQty) 
 
 	do {
 		cout << "\n\nCurrent batch expiry date " << oldQty << endl;
-		cout << "\x1B[94mPlease enter batch expiry date\033[0m";
+		cout << "\x1B[96mPlease enter batch expiry date\033[0m";
 		cout << "\nEnter new expiry date : ";
 		cin >> newExpiryDate;
 
@@ -1158,9 +1158,9 @@ void StorageMgmntSub::splitMedicineBatches() {
 					bool continueLoop = true;
 					do {
 						char confirmation;
-						cout << "\n\x1B[94mYou are about to split the dosage of this medicine\033[0m";
-						cout << "\n\x1B[94mBy splitting this medicine, it will create spliited record of this medicine with quantitiy you provide\033[0m";
-						cout << "\n\x1B[94mPlease make sure the information you going to provide is alligned with your stocks in inventory\033[0m";
+						cout << "\n\x1B[96mYou are about to split the dosage of this medicine\033[0m";
+						cout << "\n\x1B[96mBy splitting this medicine, it will create spliited record of this medicine with quantitiy you provide\033[0m";
+						cout << "\n\x1B[96mPlease make sure the information you going to provide is alligned with your stocks in inventory\033[0m";
 						cout << "\nAre you sure to proceed this action? (Y/N) : ";
 						cin >> confirmation;
 
@@ -1182,8 +1182,8 @@ void StorageMgmntSub::splitMedicineBatches() {
 					string currentQty, newQty, splitQty;
 					do {
 						string qty;
-						cout << "\n\x1B[94mThe ammount of the splitted medicine must be less than or equal to the quantity of this batch\033[0m";
-						cout << "\n\x1B[94mPlease enter quantity of this medicine you want to split\033[0m";
+						cout << "\n\x1B[96mThe ammount of the splitted medicine must be less than or equal to the quantity of this batch\033[0m";
+						cout << "\n\x1B[96mPlease enter quantity of this medicine you want to split\033[0m";
 						cout << "\nEnter quantity : ";
 						cin >> qty;
 

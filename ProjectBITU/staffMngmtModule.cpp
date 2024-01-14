@@ -22,7 +22,7 @@ void StaffMngmtModule::staffMenu(){
 	art.logoArt();
 	art.directoryArt("Main Module Menu/Staff Management Module");
 
-	cout << "\x1B[94mPlease select your next action\033[0m\n\n";
+	cout << "\x1B[96mPlease select your next action\033[0m\n\n";
 
 	cout << "1 - Register new staff\n"; 
 	cout << "2 - Update existing staff\n";
@@ -106,8 +106,8 @@ void StaffMngmtModule::staffRegistration(){
 	string userID, userIC, userName, userPhone;
 	int userRole;
 
-	cout << "\x1B[94mYou are about to register new user, to avoid redundancy of user please provide the new user IC\033[0m\n";
-	cout << "\x1B[94mPlease enter the IC number without '-' and using this format (010203040606)\033[0m\n\n";
+	cout << "\x1B[96mYou are about to register new user, to avoid redundancy of user please provide the new user IC\033[0m\n";
+	cout << "\x1B[96mPlease enter the IC number without '-' and using this format (010203040606)\033[0m\n\n";
 
 	//keep looping until all condition are met
 	do {
@@ -138,7 +138,7 @@ void StaffMngmtModule::staffRegistration(){
 	}
 
 	cout << "User did not exist in database\n";
-	cout << "\n\x1B[94mPlease provide more information\n\033[0m\n";
+	cout << "\n\x1B[96mPlease provide more information\n\033[0m\n";
 
 	do {
 		cout << "Enter user's name : ";
@@ -179,7 +179,7 @@ void StaffMngmtModule::staffRegistration(){
 	do {
 		int numOption;
 
-		cout << "\n\x1B[94mPlease select user role\033[0m\n\n";
+		cout << "\n\x1B[96mPlease select user role\033[0m\n\n";
 		cout << "1 - Superadmin\n";
 		cout << "2 - Nurse\n";
 		cout << "3 - Care taker\n";
@@ -407,7 +407,7 @@ void StaffMngmtModule::staffUpdate(string* userData){
 
 	do {
 		
-		cout << "\n\x1B[94mSelect Column you want to edit\033[0m\n\n";
+		cout << "\n\x1B[96mSelect Column you want to edit\033[0m\n\n";
 		cout << "1 - Staff IC\n";
 		cout << "2 - Staff Name\n";
 		cout << "3 - Staff Phone\n";
@@ -450,7 +450,7 @@ void StaffMngmtModule::staffUpdateIC(string* userData){
 	string staffIC;
 
 	do {
-		cout << "\x1B[94mPlease enter the IC number without '-' and using this format (010203040606)\033[0m\n\n";
+		cout << "\x1B[96mPlease enter the IC number without '-' and using this format (010203040606)\033[0m\n\n";
 		cout << "\n\nCurrent staff IC : " << userData[1] << endl;
 		cout << "New staff IC : ";
 		cin >> staffIC;
@@ -626,7 +626,7 @@ void StaffMngmtModule::staffNextAction(string* userData) {
 
 	int choice = 0;
 	
-	cout << "\n\x1B[94mPlease select your next action\033[0m\n\n";
+	cout << "\n\x1B[96mPlease select your next action\033[0m\n\n";
 	cout << "1 - Update staff\n";
 	cout << "2 - Remove staff\n";
 	cout << "3 - Go back to staff menu\n\n";
@@ -666,7 +666,7 @@ void StaffMngmtModule::staffGeneralSearch(){
 
 	string searchProperty;
 
-	cout << "\n\x1B[94mYou can search staff from the database via their staffID, name, IC number or phone number\033[0m\n\n";
+	cout << "\n\x1B[96mYou can search staff from the database via their staffID, name, IC number or phone number\033[0m\n\n";
 	cout << "Enter your staff properties : ";
 	cin >> searchProperty;	
 
@@ -741,7 +741,7 @@ void StaffMngmtModule::staffGeneralSearch(){
 
 	do {
 		char option;
-		cout << "\n\x1B[94mDo you found your staff properties?\033[0m\n\n";
+		cout << "\n\x1B[96mDo you found your staff properties?\033[0m\n\n";
 		cout << "Enter your choice (Y/N) : ";
 
 		cin >> option;
@@ -752,7 +752,7 @@ void StaffMngmtModule::staffGeneralSearch(){
 			break;
 		case 'N':
 		case 'n':
-			cout << "\n\x1B[94mRedirecting you back to search page\033[0m\n";
+			cout << "\n\x1B[96mRedirecting you back to search page\033[0m\n";
 			system("pause");
 			staffGeneralSearch();
 			break;
