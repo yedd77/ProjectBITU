@@ -339,7 +339,7 @@ void PreMgmntSubModule::removePrescription(){
 	art.directoryArt("MSMM/Prescription Management sub-module/Remove prescription");
 
 	//prescription ID
-	preID = getPrescriptionID("to remove", resID);
+	preID = getPrescriptionID(resID);
 
 	//Confirmation
 	do {
@@ -501,7 +501,7 @@ string PreMgmntSubModule::getResidentID(string resID){
 
 //the user will be shown a list of prescription of the selected resident 
 //and need to choose one
-string PreMgmntSubModule::getPrescriptionID(string action, string resID){
+string PreMgmntSubModule::getPrescriptionID(string resID){
 
 	string preID;
 	clitable::Table prescriptionTable;
@@ -515,22 +515,21 @@ string PreMgmntSubModule::getPrescriptionID(string action, string resID){
 	for (int i = 0; i < 4; i++) { prescriptionTable.addColumn(column[i]); }
 
 	//defining sql statement to get prescription information
-	string getPrescription = R"(
-	SELECT 
-		prescriptions.prescriptID,
-		residents.resName,
-		medicines.medsName,
-		prescriptions.quantity
-		
-	FROM 
-		prescriptions
-	JOIN 
-		medicines ON prescriptions.medsID = medicines.medsID
-	JOIN 
-		residents ON prescriptions.resID = residents.resID
-	WHERE 
-		residents.resID = 'RST0001'
-	)";
+	string getPrescription =
+		"SELECT "
+		"prescriptions.prescriptID, "
+		"residents.resName,"
+		"medicines.medsName, "
+		"prescriptions.quantity "
+		"FROM "
+		"prescriptions "
+		"JOIN "
+		"medicines ON prescriptions.medsID = medicines.medsID "
+		"JOIN "
+		"residents ON prescriptions.resID = residents.resID "
+		"WHERE "
+		"residents.resID = '" + resID + "'";
+	
 	const char* gp = getPrescription.c_str();
 	conState = mysql_query(connection, gp);
 
@@ -552,7 +551,7 @@ string PreMgmntSubModule::getPrescriptionID(string action, string resID){
 	cout << prescriptionTable.draw() << endl;
 
 	do {
-		cout << "\n\x1B[96mPlease select the prescription you want " +action+ "\033[0m\n";
+		cout << "\n\x1B[96mPlease select the prescription you want\033[0m\n";
 		cout << "Enter prescription ID : ";
 		cin >> preID;
 		cin.clear();
@@ -605,7 +604,7 @@ void PreMgmntSubModule::viewPrescription(){
 	art.directoryArt("MSMM/Prescription Management sub-module/View prescription");
 
 	//prescription ID
-	preID = getPrescriptionID("NULL", resID);
+	preID = getPrescriptionID(resID);
 
 	do {
 		char option;

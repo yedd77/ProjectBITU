@@ -29,12 +29,13 @@ void ResidentMgmntModule::residentMenu() {
 	cout << "\x1B[96mPlease select your next action\033[0m\n\n";
 
 	cout << "1 - Register New Resident\n";
-	cout << "2 - Update exsitng resident\n";
-	cout << "3 - Delete exsitng resident record\n";
-	cout << "4 - View Existing Resident\n";
+	cout << "2 - Update existing resident\n";
+	cout << "3 - Delete existing resident record\n";
+	cout << "4 - View existing Resident\n";
 	cout << "5 - Search Resident\n"; 
-	cout << "6 - Medication Schedule\n"; //TODO
-	cout << "7 - Go back to Main Module menu\n"; //TODO
+	cout << "6 - Medication Schedule\n"; 
+	cout << "7 - Go back to Main Module menu\n"; 
+	cout << "8 - Logout\n\n";
 
 	cout << "\nEnter your choice : ";
 
@@ -78,6 +79,7 @@ void ResidentMgmntModule::residentMenu() {
 			cout << "\nRedirecting you to search resident page\n";
 			system("pause");
 			string resID = searchGeneralResident();
+			mysql_free_result(res);
 			selectNextActionRes(resID);
 		}
 		else if (option == 6) {
@@ -91,6 +93,12 @@ void ResidentMgmntModule::residentMenu() {
 				cout << "\x1B[93m\nYou are not authorize to access this page\033[0m\n";
 				cout << "\x1B[93mRedirecting you to previous page\033[0m\n\n";
 				system("pause");
+				residentMenu();
+			}
+		}
+		else if (option == 8) {
+			system("pause");
+			if (!auth.logout()) {
 				residentMenu();
 			}
 		}
@@ -655,7 +663,6 @@ string ResidentMgmntModule::searchGeneralResident(){
 //and ask the user what they want to update
 void ResidentMgmntModule::updateResident(string resID){
 
-	system("cls");
 	art.logoArt();
 	art.directoryArt("Main Module Menu/ Resident Management Module/Resident Management Menu/Update Resident");
 
@@ -671,7 +678,7 @@ void ResidentMgmntModule::updateResident(string resID){
 		clitable::Column("Resident ID",  clitable::Column::CENTER_ALIGN, clitable::Column::CENTER_ALIGN, 1, 8, clitable::Column::NON_RESIZABLE),
 		clitable::Column("Resident IC",  clitable::Column::CENTER_ALIGN, clitable::Column::CENTER_ALIGN, 1, 13, clitable::Column::NON_RESIZABLE),
 		clitable::Column("Resident Name",  clitable::Column::CENTER_ALIGN, clitable::Column::LEFT_ALIGN, 1, 24, clitable::Column::NON_RESIZABLE),
-		clitable::Column("Room  Number",  clitable::Column::CENTER_ALIGN, clitable::Column::CENTER_ALIGN, 1, 5, clitable::Column::NON_RESIZABLE),
+		clitable::Column("Room Number",  clitable::Column::CENTER_ALIGN, clitable::Column::CENTER_ALIGN, 1, 5, clitable::Column::NON_RESIZABLE),
 		clitable::Column("Guardian Name",  clitable::Column::CENTER_ALIGN, clitable::Column::LEFT_ALIGN, 1, 24, clitable::Column::NON_RESIZABLE),
 		clitable::Column("Guardian Phone",  clitable::Column::CENTER_ALIGN, clitable::Column::LEFT_ALIGN, 1, 15, clitable::Column::NON_RESIZABLE)
 	};
@@ -1063,11 +1070,13 @@ void ResidentMgmntModule::scheduleMenu() {
 		case 1:
 			cout << "\nRedirecting you to incomplete schedule page\n";
 			system("pause");
+			mysql_free_result(res);
 			residentIncompleteSchedule();
 			break;
 		case 2:
 			cout << "\nRedirecting you to complete schedule page\n";
 			system("pause");
+			mysql_free_result(res);
 			residentCompleteSchedule();
 			break;
 		case 3:
@@ -1093,6 +1102,7 @@ void ResidentMgmntModule::residentIncompleteSchedule(){
 	system("cls");
 	art.logoArt();
 	art.directoryArt("Main Module Menu/ Resident Management Module/Resident Management Menu/Resident Schedule - Incomplete Schedule");
+
 	//define query to find the assigned resident to the current logged in user
 	string selectSchedule = "SELECT "
 		"schedules.scheduleID, "
@@ -1113,15 +1123,10 @@ void ResidentMgmntModule::residentIncompleteSchedule(){
 		"AND schedules.date = CURRENT_DATE "
 		"AND schedules.isGiven = 0 "
 		"ORDER BY schedules.timeGiven ASC ";
+
 	const char* ss = selectSchedule.c_str();
 	conState = mysql_query(connection, ss);
 	
-	if (verifier.verifyUserAuthorization(conf.getCurrentUserID())) {
-		cout << "\n\x1B[31m\nYou are not authorized to view this page\033[0m\n";
-		cout << "\x1B[31mRedirecting you back to Resident menu\033[0m\n";
-		system("pause");
-		residentMenu();
-	}
 
 	if (!conState) {
 		res = mysql_store_result(connection);
@@ -1453,7 +1458,7 @@ void ResidentMgmntModule::updateMedsStock(string scheduleID){
 		cout << "\n\x1B[32mSchedule successfully recorded as given\033[0m\n";
 		cout << "\x1B[32mRedirecting you back to Resident Schedule - Incomplete Schedule\033[0m\n";
 		system("pause");
-		residentIncompleteSchedule();
+		residentMenu();
 	}
 	else {
 		cout << "\x1B[31m\nQuery error\033[0m\n" << mysql_errno(connection) << endl;

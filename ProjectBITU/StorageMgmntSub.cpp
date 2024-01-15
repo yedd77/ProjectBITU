@@ -446,7 +446,6 @@ void StorageMgmntSub::batchMgmntAdd(string medsID) {
 	//batchID instance
 	//retrieve last record on DB
 	string queryGetLast = "SELECT * FROM batches ORDER BY batchID DESC LIMIT 1";
-	cout << queryGetLast << endl;
 
 
 	const char* q = queryGetLast.c_str();
@@ -1199,63 +1198,6 @@ void StorageMgmntSub::splitMedicineBatches() {
 						}
 					} while (true);
 
-					//create row for batch
-					string splitBatchID, splitDateExpiry;
-
-					//create batch ID for spliited batch
-					string currentID;
-					string getBatIDQuery = "SELECT * FROM batches ORDER BY batchID DESC LIMIT 1";
-					const char* q = getBatIDQuery.c_str();
-					conState = mysql_query(connection, q);
-					if (!conState) {
-						res = mysql_store_result(connection);
-						row = mysql_fetch_row(res);
-
-						if (row) {
-							currentID = row[0];
-						}
-						else {
-							currentID = "0000";
-						}
-					}
-					else {
-						cout << "\n\x1B[31mQuery error\033[0m\n" << mysql_errno(connection) << endl;
-						exit(0);
-					}
-					splitBatchID = misc.createID(currentID, "BAT");
-
-					//get and set splitted batch info
-					string getBatInfoQuery = "SELECT * FROM batches WHERE batchID = '" + batchID + "'";
-					q = getBatInfoQuery.c_str();
-					conState = mysql_query(connection, q);
-
-					if (!conState) {
-						res = mysql_store_result(connection);
-						row = mysql_fetch_row(res);
-
-						if (splitQty <= row[2]) {
-							currentQty = row[2];
-							newQty = to_string(stoi(currentQty) - stoi(splitQty));
-						}
-						else {
-							cout << "\n\x1B[31mThe quantity you entered is more than the quantity of this batch, please try again\033[0m\n";
-							system("pause");
-							StorageMgmntMenu();
-						}
-
-						splitDateExpiry = row[4];
-					}
-					else {
-						cout << "\n\x1B[31mQuery error\033[0m\n" << mysql_errno(connection) << endl;
-						exit(0);
-					}
-
-					string insertQuery = "INSERT INTO batches "
-						"(batchID, medsID, batchQuantity, batchDateEntry, batchExpiry ) "
-						"VALUES "
-						"('" + splitBatchID + "', '" + medsID + "', '" + splitQty + "',  CURRENT_DATE() , '" + splitDateExpiry + "')";
-					const char* q2 = insertQuery.c_str();
-					conState = mysql_query(connection, q2);
 
 					//create new splitted medicine row
 					string splittedMedsID, splittedMedsName, splittedMedsDosage, splittedMedsType, splittedMedsPrice, passedID;
@@ -1325,15 +1267,73 @@ void StorageMgmntSub::splitMedicineBatches() {
 						+ splittedMedsType + "', '" + splittedMedsPrice + "', '" + spliitedMedsDesc + "', '" + splittedMedsBrand +
 						"', '" + to_string(splittedMedsSedative) + "')";
 
-					q2 = insertBatQuery.c_str();
+					const char* q3 = insertBatQuery.c_str();
+					conState = mysql_query(connection, q3);
+
+					//create row for batch
+					string splitBatchID, splitDateExpiry;
+
+					//create batch ID for spliited batch
+					string currentID;
+					string getBatIDQuery = "SELECT * FROM batches ORDER BY batchID DESC LIMIT 1";
+					const char* q = getBatIDQuery.c_str();
+					conState = mysql_query(connection, q);
+					if (!conState) {
+						res = mysql_store_result(connection);
+						row = mysql_fetch_row(res);
+
+						if (row) {
+							currentID = row[0];
+						}
+						else {
+							currentID = "0000";
+						}
+					}
+					else {
+						cout << "\n\x1B[31mQuery error\033[0m\n" << mysql_errno(connection) << endl;
+						exit(0);
+					}
+					splitBatchID = misc.createID(currentID, "BAT");
+
+					//get and set splitted batch info
+					string getBatInfoQuery = "SELECT * FROM batches WHERE batchID = '" + batchID + "'";
+					q = getBatInfoQuery.c_str();
+					conState = mysql_query(connection, q);
+
+					if (!conState) {
+						res = mysql_store_result(connection);
+						row = mysql_fetch_row(res);
+
+						if (splitQty >= row[2]) {
+							currentQty = row[2];
+							newQty = to_string(stoi(currentQty) - stoi(splitQty));
+						}
+						else {
+							cout << "\n\x1B[31mThe quantity you entered is more than the quantity of this batch, please try again\033[0m\n";
+							system("pause");
+							StorageMgmntMenu();
+						}
+
+						splitDateExpiry = row[4];
+					}
+					else {
+						cout << "\n\x1B[31mQuery error\033[0m\n" << mysql_errno(connection) << endl;
+						exit(0);
+					}
+
+					string insertQuery = "INSERT INTO batches "
+						"(batchID, medsID, batchQuantity, batchDateEntry, batchExpiry ) "
+						"VALUES "
+						"('" + splitBatchID + "', '" + splittedMedsID + "', '" + splitQty + "',  CURRENT_DATE() , '" + splitDateExpiry + "')";
+					const char* q2 = insertQuery.c_str();
 					conState = mysql_query(connection, q2);
 
 					//update old batch quantity
 					string updateQuery = "UPDATE batches SET "
 						"batchQuantity = '" + newQty + "' "
 						"WHERE batchID ='" + batchID + "' ";
-					q2 = updateQuery.c_str();
-					conState = mysql_query(connection, q2);
+					const char* q4 = updateQuery.c_str();
+					conState = mysql_query(connection, q4);
 
 					cout << "\n\x1B[32mMedicines has been succesfully splitted\033[0m\n";
 					system("pause");

@@ -14,7 +14,7 @@ public:
 	void removePrescription();
 	void removePrescription(string resID, string preID);
 	string getResidentID(string resID);
-	string getPrescriptionID(string action, string resID);
+	string getPrescriptionID(string resID);
 	void viewPrescription();
 };
 #endif // !PREMGMNTDUBMODULE_H

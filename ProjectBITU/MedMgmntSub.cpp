@@ -27,8 +27,7 @@ void MedMgmntSub::MedsMgmntMenu() {
 	cout << "2 - Update existing medicine\n";
 	cout << "3 - Remove existing medicine\n"; 
 	cout << "4 - View medicines list\n";
-	cout << "5 - Search existing medicine\n";
-	cout << "6 - Go back to previous menu\n"; 
+	cout << "5 - Go back to previous menu\n"; 
 
 	cout << "\nEnter your choice : ";
 
@@ -73,11 +72,6 @@ void MedMgmntSub::MedsMgmntMenu() {
 			medsNextAction(medsData);
 		}
 		else if (option == 5) {
-			cout << "\nRedirecting you to previous menu\n";
-			system("pause");
-			medStrgModule.nurseModuleMenu();
-		}
-		else if (option == 6) {
 			cout << "\nRedirecting you to previous menu\n";
 			system("pause");
 			medStrgModule.nurseModuleMenu();
